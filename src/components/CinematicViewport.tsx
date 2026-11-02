@@ -12,6 +12,7 @@ import { GlitchText } from './GlitchText';
 import { InventoryBar } from './InventoryBar';
 import { HorrorMedia } from './HorrorMedia';
 import { HORROR_ASSETS } from '../engine/assetRegistry';
+import { audioDirector } from '../engine/audioDirector';
 
 export const CinematicViewport: React.FC = () => {
   const currentScene = useSessionStore((state) => state.currentScene);
@@ -25,7 +26,12 @@ export const CinematicViewport: React.FC = () => {
   const inventory = useSessionStore((state) => state.inventory);
   const selectedItemId = useSessionStore((state) => state.selectedItemId);
   const setSelectedItemId = useSessionStore((state) => state.setSelectedItemId);
+  const retreatScene = useSessionStore((state) => state.retreatScene);
+  const sceneHistory = useSessionStore((state) => state.sceneHistory);
+  const flashlightPos = useSessionStore((state) => state.flashlightPos);
+  const soundEnabled = useSessionStore((state) => state.soundEnabled);
 
+  const canRetreat = sceneHistory.length > 0;
   const [narrativeLine, setNarrativeLine] = useState<string>('');
 
   // Session Tick loop (~10Hz)
@@ -37,38 +43,50 @@ export const CinematicViewport: React.FC = () => {
     return () => clearInterval(interval);
   }, [tickSession]);
 
-  // Narrative text sequence timer
+  // Narrative text sequence timer & horror vocal speech
   useEffect(() => {
     const lines = currentScene.narrativeText;
     if (!lines || lines.length === 0) return;
 
     let index = 0;
     setNarrativeLine(lines[0]);
+    if (soundEnabled && !isPaused) {
+      audioDirector.speakHorrorVoice(lines[0], 'whisper');
+    }
 
     const lineInterval = setInterval(() => {
       index = (index + 1) % lines.length;
       setNarrativeLine(lines[index]);
+      if (soundEnabled && !isPaused) {
+        audioDirector.speakHorrorVoice(lines[index], 'whisper');
+      }
     }, 5500);
 
     return () => clearInterval(lineInterval);
-  }, [currentScene]);
+  }, [currentScene, soundEnabled, isPaused]);
 
-  // Keyboard shortcut: ESC to toggle pause
+  // Keyboard shortcut: ESC to toggle pause, Backspace/B to retreat
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         togglePause();
+      } else if (e.key === 'Backspace' || e.key.toLowerCase() === 'b') {
+        if (canRetreat) {
+          retreatScene();
+        }
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [togglePause]);
+  }, [togglePause, canRetreat, retreatScene]);
 
   const swayAmount = reducedMotion ? 0 : 0.8 + (tensionLevel / 100) * 1.8;
+  const headTiltX = reducedMotion ? 0 : (flashlightPos.y - 50) * 0.08;
+  const headTiltY = reducedMotion ? 0 : (flashlightPos.x - 50) * -0.08;
 
   return (
     <div className="relative w-screen h-screen bg-void overflow-hidden select-none">
-      {/* Cinematic Camera Rig Container */}
+      {/* Cinematic Camera Rig Container with 3D Augmented Reality Perspective */}
       <motion.div
         animate={
           reducedMotion
@@ -77,7 +95,9 @@ export const CinematicViewport: React.FC = () => {
                 scale: [1, 1.025, 1.015, 1.03, 1],
                 rotate: [0, 0.35, -0.25, 0.2, 0],
                 x: [0, swayAmount, -swayAmount, swayAmount * 0.5, 0],
-                y: [0, -swayAmount * 0.5, swayAmount, -swayAmount, 0]
+                y: [0, -swayAmount * 0.5, swayAmount, -swayAmount, 0],
+                rotateX: headTiltX,
+                rotateY: headTiltY
               }
         }
         transition={{
@@ -86,6 +106,7 @@ export const CinematicViewport: React.FC = () => {
           ease: 'easeInOut'
         }}
         className="relative w-full h-full"
+        style={{ perspective: 1200, transformStyle: 'preserve-3d' }}
       >
         <SceneElements scene={currentScene} onInspectHotspot={inspectHotspot} />
         <FlashlightLayer reducedMotion={reducedMotion} />
@@ -134,6 +155,32 @@ export const CinematicViewport: React.FC = () => {
         <p className="font-cinematic text-xs md:text-sm tracking-[0.25em] text-bone uppercase pt-0.5">
           {currentScene.locationName}
         </p>
+      </div>
+
+      {/* Immersive Turn Back Door Button */}
+      {canRetreat && (
+        <motion.button
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={retreatScene}
+          className="absolute top-6 right-20 z-40 flex items-center space-x-2 px-3.5 py-1.5 border border-blood/50 bg-abyss/90 text-bone hover:border-blood-light hover:bg-blood/20 text-[11px] font-mono tracking-widest uppercase transition-all shadow-[0_0_15px_rgba(162,13,25,0.4)] cursor-pointer"
+        >
+          <span className="text-blood-light animate-pulse">🚪 ⬅</span>
+          <span>TURN BACK DOOR</span>
+        </motion.button>
+      )}
+
+      {/* Augmented Reality Tactical Sensor Telemetry Overlay */}
+      <div className="absolute bottom-6 right-6 z-40 pointer-events-none font-mono text-[10px] tracking-[0.2em] text-dust/60 space-y-1 text-right hidden sm:block">
+        <div className="flex items-center justify-end space-x-2">
+          <span className="w-1.5 h-1.5 rounded-full bg-blood animate-ping" />
+          <span className="text-blood-light font-bold">AR REALITY SENSOR ACTIVE</span>
+        </div>
+        <p>AZIMUTH: {Math.round(flashlightPos.x * 3.6)}° | ELEV: {Math.round((50 - flashlightPos.y) * 1.8)}°</p>
+        <p>THERMAL FLUX: {(19.2 - (tensionLevel / 100) * 15.5).toFixed(1)}°C</p>
+        <p>BIOMETRIC PULSE: {70 + Math.round(tensionLevel * 0.75)} BPM</p>
       </div>
 
       {/* Narrative Subtitle Bar at Bottom Center */}

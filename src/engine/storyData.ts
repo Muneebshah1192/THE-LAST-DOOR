@@ -142,6 +142,15 @@ export const SCENES: Record<string, SceneDef> = {
         radiusPercent: 18,
         actionText: 'ENTER PARLOR',
         revealsText: 'A FAINT WARMTH EMANATES FROM THE HEARTH.'
+      },
+      {
+        id: 'foyer-back-porch',
+        name: 'Front Entry Doorway',
+        xPercent: 10,
+        yPercent: 55,
+        radiusPercent: 14,
+        actionText: 'STEP BACK OUT TO PORCH',
+        revealsText: 'THE COLD RAIN STILL BEATS AGAINST THE CEDAR PORCH.'
       }
     ]
   },
@@ -195,6 +204,15 @@ export const SCENES: Record<string, SceneDef> = {
         radiusPercent: 16,
         actionText: 'PROCEED TO CORRIDOR',
         revealsText: 'THE AIR GROWS CHOKINGLY HEAVY.'
+      },
+      {
+        id: 'parlor-back-foyer',
+        name: 'Foyer Doorway',
+        xPercent: 10,
+        yPercent: 55,
+        radiusPercent: 14,
+        actionText: 'RETURN TO FOYER & GRANDFATHER CLOCK',
+        revealsText: 'RETURNING TO THE FROZEN GRANDFATHER CLOCK.'
       }
     ]
   },
@@ -238,6 +256,15 @@ export const SCENES: Record<string, SceneDef> = {
         radiusPercent: 18,
         actionText: 'UNLOCK CELLAR WITH KEY 17',
         revealsText: 'USE THE BRASS KEY FROM THE MANTEL CUPBOARD TO ESCAPE.'
+      },
+      {
+        id: 'hallway-back-parlor',
+        name: 'Parlor Entrance Doorway',
+        xPercent: 10,
+        yPercent: 55,
+        radiusPercent: 14,
+        actionText: 'RETURN TO PARLOR & MANTEL',
+        revealsText: 'STEPPING BACK INTO THE PARLOR TO SOLVE THE MANTEL LOCK.'
       }
     ]
   },
@@ -362,6 +389,15 @@ export const SCENES: Record<string, SceneDef> = {
         actionText: 'SEARCH TOOLBOX',
         revealsText: 'YOU FOUND A 30A FUSE AND THE TRIANGULAR ELEVATOR SERVICE KEY!',
         relicId: 'breaker_fuse'
+      },
+      {
+        id: 'floor13-back-elevator',
+        name: 'Elevator Doors',
+        xPercent: 10,
+        yPercent: 55,
+        radiusPercent: 14,
+        actionText: 'STEP BACK INTO ELEVATOR',
+        revealsText: 'RETREATING BACK INTO THE ELEVATOR CAB.'
       }
     ]
   },
@@ -486,6 +522,15 @@ export const SCENES: Record<string, SceneDef> = {
         radiusPercent: 20,
         actionText: 'CUT PLASTIC SEAL WITH SCALPEL',
         revealsText: 'USE THE SURGICAL SCALPEL FROM THE DISPENSARY SAFE TO ESCAPE.'
+      },
+      {
+        id: 'hospital-back-reception',
+        name: 'Reception Corridor Doors',
+        xPercent: 10,
+        yPercent: 55,
+        radiusPercent: 14,
+        actionText: 'RETURN TO RECEPTION & DISPENSARY SAFE',
+        revealsText: 'RETURNING TO NURSE STATION AND DISPENSARY SAFE.'
       }
     ]
   },
@@ -601,6 +646,15 @@ export const SCENES: Record<string, SceneDef> = {
         radiusPercent: 22,
         actionText: 'IGNITE RUNES (N -> E -> S -> W)',
         revealsText: 'COLD FLAMES ROAR TO LIFE! THE FOG SHATTERS TO THE EAST.'
+      },
+      {
+        id: 'forest-back-path',
+        name: 'Pine Fog Trail',
+        xPercent: 10,
+        yPercent: 55,
+        radiusPercent: 14,
+        actionText: 'RETREAT TO MISTY PINE TRAIL',
+        revealsText: 'FOLLOWING THE TRACKS BACK INTO THE FOG.'
       }
     ]
   },
@@ -725,6 +779,15 @@ export const SCENES: Record<string, SceneDef> = {
         radiusPercent: 20,
         actionText: 'UNLOCK GATE WITH IRON KEY',
         revealsText: 'USE THE IRON CRYPT KEY TO SHATTER THE ILLUSION AND ESCAPE.'
+      },
+      {
+        id: 'mirror-back-chamber',
+        name: 'Shattered Mirror Frame',
+        xPercent: 10,
+        yPercent: 55,
+        radiusPercent: 14,
+        actionText: 'STEP BACK INTO MIRROR CHAMBER',
+        revealsText: 'STEPPING BACK THROUGH THE SILVERED GLASS REFLECTION.'
       }
     ]
   },

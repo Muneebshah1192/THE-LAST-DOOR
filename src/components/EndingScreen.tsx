@@ -34,7 +34,6 @@ export const EndingScreen: React.FC<EndingScreenProps> = ({
     <div className="relative w-screen h-screen bg-void flex flex-col items-center justify-center p-6 select-none overflow-hidden z-50">
       <div className="cinematic-vignette-blood" />
       <div className="film-grain opacity-35" />
-      <div className="crt-scanlines opacity-55" />
 
       <motion.div
         initial={{ opacity: 0, y: 15 }}

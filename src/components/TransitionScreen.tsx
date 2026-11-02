@@ -12,7 +12,6 @@ export const TransitionScreen: React.FC = () => {
     <div className="relative w-screen h-screen bg-void flex items-center justify-center overflow-hidden z-50 select-none">
       <div className="cinematic-vignette-blood" />
       <div className="film-grain opacity-40" />
-      <div className="crt-scanlines opacity-50" />
 
       {/* SUDDEN FACE ENCOUNTER (If triggered during door approach!) */}
       {transitionFaceEncounter ? (

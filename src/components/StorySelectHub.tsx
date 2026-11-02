@@ -30,7 +30,6 @@ export const StorySelectHub: React.FC<StorySelectHubProps> = ({
     <div className="fixed inset-0 bg-void z-50 flex flex-col items-center justify-center p-6 select-none overflow-y-auto">
       <div className="cinematic-vignette-blood" />
       <div className="film-grain opacity-30" />
-      <div className="crt-scanlines opacity-40" />
 
       <motion.div
         initial={{ opacity: 0, y: 15 }}

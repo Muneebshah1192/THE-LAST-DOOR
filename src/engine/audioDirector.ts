@@ -1,5 +1,6 @@
 // The Last Door V2 - High-Fidelity Psychological Horror Audio Engine
 // Web Audio API Synthesizers + Directional Spatial Panning + Supernatural Vocals
+import { horrorVocalEngine } from './horrorVocalEngine';
 
 class AudioDirector {
   private ctx: AudioContext | null = null;
@@ -77,6 +78,9 @@ class AudioDirector {
 
   public setMute(muted: boolean): void {
     this.isMuted = muted;
+    if (muted) {
+      horrorVocalEngine.stopSpeaking();
+    }
     if (this.masterGain && this.ctx) {
       this.masterGain.gain.setValueAtTime(muted ? 0 : this.masterVolume, this.ctx.currentTime);
     }
@@ -531,6 +535,40 @@ class AudioDirector {
     } catch {
       // Safe skip
     }
+  }
+
+  // 12. Heavy Horror Effects: Scream, Shriek, Yell, Screech & Chief Demonic Voices
+  public playBloodcurdlingScream(): void {
+    if (this.isMuted) return;
+    this.playOpeningImpact();
+    horrorVocalEngine.playHorrorEffect('scream', 0.95);
+  }
+
+  public playPiercingShriek(): void {
+    if (this.isMuted) return;
+    this.playGlitchStatic();
+    horrorVocalEngine.playHorrorEffect('shriek', 0.9);
+  }
+
+  public playGutturalYell(): void {
+    if (this.isMuted) return;
+    this.playOpeningImpact();
+    horrorVocalEngine.playHorrorEffect('yell', 0.95);
+  }
+
+  public playSupernaturalScreech(): void {
+    if (this.isMuted) return;
+    horrorVocalEngine.playHorrorEffect('screech', 0.9);
+  }
+
+  public playChiefVoice(type: 'locked' | 'escape' | 'behind' = 'locked'): void {
+    if (this.isMuted) return;
+    horrorVocalEngine.playHorrorEffect(`chief_${type}` as any, 0.95);
+  }
+
+  public speakHorrorVoice(text: string, style: 'demonic' | 'demon_chief' | 'whisper' | 'banshee' = 'demon_chief'): void {
+    if (this.isMuted) return;
+    horrorVocalEngine.speakEntityVoice(text, style);
   }
 
   public playSubThud(_intensity: number = 0.5): void {

@@ -16,6 +16,8 @@ export const FaceReveal: React.FC<FaceRevealProps> = ({ entityId, onComplete }) 
 
   useEffect(() => {
     audioDirector.playFaceStinger();
+    audioDirector.playBloodcurdlingScream();
+    audioDirector.playPiercingShriek();
     const asset = getRandomFaceEncounter();
     setActiveAsset(asset);
 

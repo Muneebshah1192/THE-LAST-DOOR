@@ -343,3 +343,33 @@ describe('Horror Asset Encounter & Animation Pipeline', () => {
     expect(HORROR_ASSETS['custom_phantom_loop'].name).toBe('Custom User Phantom');
   });
 });
+
+describe('Door Backtrack Navigation & Room Continuity', () => {
+  it('equips key scenes across stories with physical backtrack door hotspots', () => {
+    // Story 1: House That Breathes
+    const foyer = SCENES['house-foyer'];
+    expect(foyer.hotspots.some(h => h.id === 'foyer-back-porch')).toBe(true);
+
+    const parlor = SCENES['house-parlor'];
+    expect(parlor.hotspots.some(h => h.id === 'parlor-back-foyer')).toBe(true);
+
+    const hallway = SCENES['house-hallway'];
+    expect(hallway.hotspots.some(h => h.id === 'hallway-back-parlor')).toBe(true);
+
+    // Story 2: Floor 13
+    const floor13Hallway = SCENES['floor13-hallway'];
+    expect(floor13Hallway.hotspots.some(h => h.id === 'floor13-back-elevator')).toBe(true);
+
+    // Story 3: The Empty Hospital
+    const hospitalHallway = SCENES['hospital-hallway'];
+    expect(hospitalHallway.hotspots.some(h => h.id === 'hospital-back-reception')).toBe(true);
+
+    // Story 4: The Forest
+    const forestAltar = SCENES['forest-altar'];
+    expect(forestAltar.hotspots.some(h => h.id === 'forest-back-path')).toBe(true);
+
+    // Story 5: The Mirror
+    const mirrorReversed = SCENES['mirror-reversed'];
+    expect(mirrorReversed.hotspots.some(h => h.id === 'mirror-back-chamber')).toBe(true);
+  });
+});

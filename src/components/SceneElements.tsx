@@ -54,6 +54,65 @@ export const SceneElements: React.FC<SceneElementsProps> = ({ scene, onInspectHo
 
   const handleHotspotClick = (hotspotId: string, revealsText?: string) => {
     // -------------------------------------------------------------
+    // BACKTRACK NAVIGATION PORTALS (ALL STORIES)
+    // -------------------------------------------------------------
+    if (hotspotId === 'foyer-back-porch') {
+      audioDirector.playDoorLatch();
+      audioDirector.speakHorrorVoice('You retreat into the cold downpour outside.', 'whisper');
+      showToast('RETREATING TO CEDAR PORCH...');
+      setTimeout(() => advanceScene('house-porch'), 300);
+      return;
+    }
+
+    if (hotspotId === 'parlor-back-foyer') {
+      audioDirector.playDoorLatch();
+      audioDirector.speakHorrorVoice('Returning to the grandfather clock.', 'whisper');
+      showToast('RETURNING TO FOYER & GRANDFATHER CLOCK (03:17)...');
+      setTimeout(() => advanceScene('house-foyer'), 300);
+      return;
+    }
+
+    if (hotspotId === 'hallway-back-parlor') {
+      audioDirector.playDoorLatch();
+      audioDirector.speakHorrorVoice('Retreating from the cellar passage.', 'whisper');
+      showToast('RETREATING TO PARLOR...');
+      setTimeout(() => advanceScene('house-parlor'), 300);
+      return;
+    }
+
+    if (hotspotId === 'floor13-back-elevator') {
+      audioDirector.playDoorLatch();
+      audioDirector.speakHorrorVoice('Returning to the elevator shaft.', 'whisper');
+      showToast('RETURNING TO ELEVATOR CABIN...');
+      setTimeout(() => advanceScene('floor13-elevator'), 300);
+      return;
+    }
+
+    if (hotspotId === 'hospital-back-reception') {
+      audioDirector.playDoorLatch();
+      audioDirector.speakHorrorVoice('Retreating to reception desk.', 'whisper');
+      showToast('RETREATING TO RECEPTION DESK...');
+      setTimeout(() => advanceScene('hospital-reception'), 300);
+      return;
+    }
+
+    if (hotspotId === 'forest-back-path') {
+      audioDirector.playFloorCreak(-0.2);
+      audioDirector.speakHorrorVoice('Retracing footsteps through the pine trees.', 'whisper');
+      showToast('RETRACING STEPS TO CABIN PATH...');
+      setTimeout(() => advanceScene('forest-path'), 300);
+      return;
+    }
+
+    if (hotspotId === 'mirror-back-chamber') {
+      audioDirector.playFloorCreak(0.3);
+      audioDirector.speakHorrorVoice('Returning to the occult mirror chamber.', 'whisper');
+      showToast('STEPPING BACK TO MIRROR CHAMBER...');
+      setTimeout(() => advanceScene('mirror-chamber'), 300);
+      return;
+    }
+
+    // -------------------------------------------------------------
     // STORY 1: PUZZLE INTERACTIONS
     // -------------------------------------------------------------
     if (hotspotId === 'parlor-cupboard') {
@@ -70,11 +129,15 @@ export const SceneElements: React.FC<SceneElementsProps> = ({ scene, onInspectHo
       const hasKey = inventory.some((i) => i.id === 'brass_key_17');
       if (hasKey) {
         audioDirector.playDoorLatch();
+        audioDirector.playOpeningImpact();
+        audioDirector.speakHorrorVoice('The cellar opens. Welcome to the impossible.', 'demonic');
         showToast('YOU TURN BRASS KEY 17 IN THE LOCK. THE CELLAR OPENS!');
         setTimeout(() => advanceScene('house-impossible-room'), 1500);
       } else {
-        audioDirector.playFloorCreak(-0.2);
-        showToast('LOCKED! THE DEADBOLT REQUIRES KEY 17 (INSIDE THE MANTEL CABINET).');
+        audioDirector.playChiefVoice('locked');
+        audioDirector.playSupernaturalScreech();
+        audioDirector.speakHorrorVoice('The door is locked. Find key seventeen in the mantel cabinet before she awakens.', 'demonic');
+        showToast('LOCKED! THE DEADBOLT REQUIRES KEY 17 (INSIDE THE MANTEL CABINET IN PARLOR). TURN BACK TO SEARCH!');
       }
       return;
     }
@@ -82,6 +145,7 @@ export const SceneElements: React.FC<SceneElementsProps> = ({ scene, onInspectHo
     if (hotspotId === 'impossible-threshold') {
       audioDirector.playDoorLatch();
       audioDirector.playOpeningImpact();
+      audioDirector.speakHorrorVoice('You cross the threshold into eternity.', 'whisper');
       showToast('YOU ESCAPE THE HOUSE THAT BREATHES!');
       setTimeout(() => advanceScene('house-impossible-room'), 600);
       return;
@@ -95,6 +159,7 @@ export const SceneElements: React.FC<SceneElementsProps> = ({ scene, onInspectHo
         addItemToInventory(MASTER_ITEMS['breaker_fuse']);
         addItemToInventory(MASTER_ITEMS['maintenance_key']);
         audioDirector.playOpeningImpact();
+        audioDirector.speakHorrorVoice('Cartridge fuse retrieved. Restore power to descend.', 'whisper');
         showToast('COLLECTED: 30A CARTRIDGE FUSE & ELEVATOR SERVICE KEY!');
       } else {
         showToast('TOOLBOX IS EMPTY. YOU ALREADY HOLD THE FUSE AND KEY.');
@@ -106,9 +171,13 @@ export const SceneElements: React.FC<SceneElementsProps> = ({ scene, onInspectHo
       const hasFuse = inventory.some((i) => i.id === 'breaker_fuse');
       if (hasFuse) {
         audioDirector.playGlitchStatic();
+        audioDirector.playOpeningImpact();
+        audioDirector.speakHorrorVoice('Emergency descent gears energized. Escape now.', 'demonic');
         showToast('FUSE INSERTED! POWER RESTORED TO EMERGENCY DESCENT GEARS.');
         setTimeout(() => advanceScene('floor13-escape'), 1600);
       } else {
+        audioDirector.playSupernaturalScreech();
+        audioDirector.speakHorrorVoice('Breaker blown. Search custodian toolbox for cartridge fuse.', 'whisper');
         showToast('BREAKER BLOWN! YOU NEED A 30A FUSE (SEARCH CUSTODIAN TOOLBOX).');
       }
       return;
@@ -116,6 +185,7 @@ export const SceneElements: React.FC<SceneElementsProps> = ({ scene, onInspectHo
 
     if (hotspotId === 'floor13-exit-doors') {
       audioDirector.playDoorLatch();
+      audioDirector.speakHorrorVoice('You break through into the city rain.', 'whisper');
       showToast('YOU BURST THROUGH THE GROUND FLOOR LOBBY! FLOOR 13 ESCAPED!');
       setTimeout(() => advanceScene('floor13-escape'), 500);
       return;
@@ -127,6 +197,7 @@ export const SceneElements: React.FC<SceneElementsProps> = ({ scene, onInspectHo
     if (hotspotId === 'hospital-clipboard') {
       if (!inventory.some((i) => i.id === 'patient_chart_742')) {
         addItemToInventory(MASTER_ITEMS['patient_chart_742']);
+        audioDirector.speakHorrorVoice('Patient file seven four two. The safe awaits.', 'whisper');
         showToast('COLLECTED: PATIENT FILE #742 (DISPENSARY SAFE CODE: 0742)');
       } else {
         showToast('FILE #742: SUBJECT UNKNOWN. SAFE CODE: 0742.');
@@ -148,16 +219,20 @@ export const SceneElements: React.FC<SceneElementsProps> = ({ scene, onInspectHo
       const hasScalpel = inventory.some((i) => i.id === 'surgical_scalpel');
       if (hasScalpel) {
         audioDirector.playOpeningImpact();
+        audioDirector.speakHorrorVoice('Poly sheet severed. Fire exit cleared.', 'whisper');
         showToast('YOU SLICE THROUGH THE BIOHAZARD POLYETHYLENE TO FREEDOM!');
         setTimeout(() => advanceScene('hospital-escape'), 1600);
       } else {
-        showToast('REINFORCED PLASTIC! CANNOT TEAR WITH BARE HANDS (NEED SCALPEL).');
+        audioDirector.playChiefVoice('locked');
+        audioDirector.speakHorrorVoice('Reinforced barrier. Unlock the dispensary safe zero seven four two for scalpel.', 'demonic');
+        showToast('REINFORCED PLASTIC! CANNOT TEAR WITH BARE HANDS (NEED SCALPEL FROM SAFE 0742).');
       }
       return;
     }
 
     if (hotspotId === 'hospital-fire-exit') {
       audioDirector.playDoorLatch();
+      audioDirector.speakHorrorVoice('You burst through the emergency stairs.', 'whisper');
       showToast('YOU BURST INTO THE NIGHT AIR! HOSPITAL ESCAPED!');
       setTimeout(() => advanceScene('hospital-escape'), 500);
       return;
@@ -171,6 +246,7 @@ export const SceneElements: React.FC<SceneElementsProps> = ({ scene, onInspectHo
         addItemToInventory(MASTER_ITEMS['brass_compass']);
         addItemToInventory(MASTER_ITEMS['ritual_flint']);
         audioDirector.playFloorCreak(-0.3);
+        audioDirector.speakHorrorVoice('Brass compass and ritual flint obtained.', 'whisper');
         showToast('COLLECTED: BRASS COMPASS & BLACKENED RITUAL FLINT!');
       } else {
         showToast('CABIN IS EMPTY. YOU HOLD THE COMPASS AND FLINT.');
@@ -187,9 +263,13 @@ export const SceneElements: React.FC<SceneElementsProps> = ({ scene, onInspectHo
       const hasTools = inventory.some((i) => i.id === 'ritual_flint');
       if (hasTools) {
         audioDirector.playOpeningImpact();
+        audioDirector.speakHorrorVoice('The runic pillars ignite. The fog dissolves.', 'demonic');
         showToast('COLD BLUE FIRE IGNITES ACROSS THE FOUR PILLARS! THE FOG PARTS!');
         setTimeout(() => advanceScene('forest-escape'), 1800);
       } else {
+        audioDirector.playChiefVoice('escape');
+        audioDirector.playGutturalYell();
+        audioDirector.speakHorrorVoice('The runic altar demands ritual flint from the abandoned cabin.', 'demonic');
         showToast('THE RUNIC ALTAR REQUIRES RITUAL FLINT TO IGNITE (SEARCH CABIN).');
       }
       return;
@@ -197,6 +277,7 @@ export const SceneElements: React.FC<SceneElementsProps> = ({ scene, onInspectHo
 
     if (hotspotId === 'forest-road-exit') {
       audioDirector.playDoorLatch();
+      audioDirector.speakHorrorVoice('Asphalt underfoot. The trees cannot follow.', 'whisper');
       showToast('YOU REACH THE HIGHWAY! THE BLACKWOOD FOREST IS BROKEN!');
       setTimeout(() => advanceScene('forest-escape'), 500);
       return;
@@ -208,6 +289,7 @@ export const SceneElements: React.FC<SceneElementsProps> = ({ scene, onInspectHo
     if (hotspotId === 'mirror-shard-floor') {
       if (!inventory.some((i) => i.id === 'glass_shard')) {
         addItemToInventory(MASTER_ITEMS['glass_shard']);
+        audioDirector.speakHorrorVoice('Silvered glass shard collected. Reverses mirror ciphers.', 'whisper');
         showToast('COLLECTED: SILVERED MIRROR SHARD (INVERTS CIPHERS)');
       } else {
         showToast('LOOKING THROUGH THE SHARD REVERSES 1366 INTO 6631.');
@@ -234,16 +316,21 @@ export const SceneElements: React.FC<SceneElementsProps> = ({ scene, onInspectHo
       const hasKey = inventory.some((i) => i.id === 'iron_crypt_key');
       if (hasKey) {
         audioDirector.playDoorLatch();
+        audioDirector.speakHorrorVoice('Iron key unlocks the crypt gate. Reality shatters.', 'whisper');
         showToast('IRON KEY UNLOCKS THE GATE! THE MIRROR SHATTERS!');
         setTimeout(() => advanceScene('mirror-escape'), 1600);
       } else {
-        showToast('BARRED BY HEAVY IRON! REQUIRES IRON CRYPT KEY (SOLVE CIPHER).');
+        audioDirector.playChiefVoice('behind');
+        audioDirector.playPiercingShriek();
+        audioDirector.speakHorrorVoice('Barred iron. Invert the mirror cipher six six three one to claim the key.', 'demonic');
+        showToast('BARRED BY HEAVY IRON! REQUIRES IRON CRYPT KEY (SOLVE CIPHER 6631).');
       }
       return;
     }
 
     if (hotspotId === 'mirror-reality-exit') {
       audioDirector.playOpeningImpact();
+      audioDirector.speakHorrorVoice('You shattered the mirror and returned to reality.', 'whisper');
       showToast('YOU SHATTERED THE OCCULT MIRROR AND ESCAPED TO REALITY!');
       setTimeout(() => advanceScene('mirror-escape'), 500);
       return;
@@ -265,9 +352,13 @@ export const SceneElements: React.FC<SceneElementsProps> = ({ scene, onInspectHo
       if (puzzle.rewardItemId && MASTER_ITEMS[puzzle.rewardItemId]) {
         addItemToInventory(MASTER_ITEMS[puzzle.rewardItemId]);
       }
+      audioDirector.playDoorLatch();
+      audioDirector.speakHorrorVoice('Lock disengaged.', 'whisper');
       showToast(puzzle.solvedMessage, 4500);
       return true;
     } else {
+      audioDirector.playSupernaturalScreech();
+      audioDirector.speakHorrorVoice('Incorrect sequence. She draws near.', 'demonic');
       showToast(puzzle.failureMessage, 4000);
       return false;
     }

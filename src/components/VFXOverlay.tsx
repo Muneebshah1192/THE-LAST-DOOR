@@ -8,7 +8,6 @@ export const VFXOverlay: React.FC = () => {
   const activeCreature = useSessionStore((state) => state.activeCreature);
 
   const grainOpacity = reducedMotion ? 0.15 : 0.28 + (tensionLevel / 100) * 0.16;
-  const scanlineOpacity = 0.35 + (tensionLevel / 100) * 0.35;
   const hasSupernaturalPresence = !!activeCreature;
 
   return (
@@ -26,12 +25,6 @@ export const VFXOverlay: React.FC = () => {
       <div 
         className="cinematic-vignette-blood transition-opacity duration-1000"
         style={{ opacity: hasSupernaturalPresence || tensionLevel > 60 ? 0.75 : 0.25 }}
-      />
-
-      {/* CRT Scanline Overlay */}
-      <div 
-        className={`crt-scanlines ${tensionLevel > 65 ? 'animate-flicker' : ''}`}
-        style={{ opacity: scanlineOpacity }}
       />
 
       {/* Faint Red Occult Chromatic Pulse on Creature Presence */}

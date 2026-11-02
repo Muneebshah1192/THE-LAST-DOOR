@@ -24,6 +24,7 @@ interface SessionState {
   currentStoryId: string;
   currentSceneId: string;
   currentScene: SceneDef;
+  sceneHistory: string[]; // History of visited scenes to allow retreating/backtracking
   narrativeTextIndex: number;
   revealedHotspots: string[];
   flashlightPos: { x: number; y: number };
@@ -84,6 +85,7 @@ interface SessionState {
   performContextAction: (actionType: 'listen' | 'touch' | 'inspect', hotspotId: string) => void;
   selectChoice: (choiceId: string, leadsToSceneId: string, tensionImpact: number) => void;
   advanceScene: (targetSceneId: string) => void;
+  retreatScene: () => void;
   switchStory: (storyId: string) => void;
   clearTransitionEncounter: () => void;
   tickSession: (deltaSeconds: number) => void;
@@ -101,6 +103,7 @@ export const useSessionStore = create<SessionState>((set, get) => {
     currentStoryId: 'the-house-that-breathes',
     currentSceneId: 'house-porch',
     currentScene: SCENES['house-porch'],
+    sceneHistory: [],
     narrativeTextIndex: 0,
     revealedHotspots: [],
     flashlightPos: { x: 50, y: 50 },
@@ -263,6 +266,20 @@ export const useSessionStore = create<SessionState>((set, get) => {
         get().advanceScene('floor13-hallway');
       } else if (hotspot.id === 'hospital-ward-door') {
         get().advanceScene('hospital-hallway');
+      } else if (hotspot.id === 'foyer-back-porch') {
+        get().advanceScene('house-porch');
+      } else if (hotspot.id === 'parlor-back-foyer') {
+        get().advanceScene('house-foyer');
+      } else if (hotspot.id === 'hallway-back-parlor') {
+        get().advanceScene('house-parlor');
+      } else if (hotspot.id === 'floor13-back-elevator') {
+        get().advanceScene('floor13-elevator');
+      } else if (hotspot.id === 'hospital-back-reception') {
+        get().advanceScene('hospital-reception');
+      } else if (hotspot.id === 'forest-back-path') {
+        get().advanceScene('forest-path');
+      } else if (hotspot.id === 'mirror-back-chamber') {
+        get().advanceScene('mirror-chamber');
       }
     },
 
@@ -293,6 +310,13 @@ export const useSessionStore = create<SessionState>((set, get) => {
       const nextScene = SCENES[targetSceneId];
       if (!nextScene) return;
 
+      const currentId = get().currentSceneId;
+      const history = get().sceneHistory;
+      // Record previous scene in history if moving to a different scene and not an ending
+      const nextHistory = (currentId && currentId !== targetSceneId && !nextScene.isEndingScene)
+        ? [...history, currentId]
+        : history;
+
       const currentTension = tensionDirector.getTension();
 
       // Sudden Face Encounter check
@@ -304,7 +328,8 @@ export const useSessionStore = create<SessionState>((set, get) => {
 
       set({ 
         stage: 'transition',
-        transitionFaceEncounter: faceEncounter
+        transitionFaceEncounter: faceEncounter,
+        sceneHistory: nextHistory
       });
 
       if (targetSceneId.includes('foyer') || targetSceneId.includes('elevator')) {
@@ -346,6 +371,37 @@ export const useSessionStore = create<SessionState>((set, get) => {
       }, transitionDuration);
     },
 
+    retreatScene: () => {
+      const history = [...get().sceneHistory];
+      if (history.length === 0) return;
+
+      const prevSceneId = history.pop()!;
+      const prevScene = SCENES[prevSceneId];
+      if (!prevScene) return;
+
+      audioDirector.playDoorLatch();
+      audioDirector.playFloorCreak(-0.2);
+      audioDirector.playChiefVoice('behind');
+
+      set({
+        stage: 'transition',
+        transitionFaceEncounter: null,
+        sceneHistory: history
+      });
+
+      setTimeout(() => {
+        tensionDirector.setTargetTension(prevScene.targetTension);
+        set({
+          stage: 'cinematic',
+          currentSceneId: prevSceneId,
+          currentScene: prevScene,
+          narrativeTextIndex: 0,
+          revealedHotspots: [],
+          transitionFaceEncounter: null
+        });
+      }, 1200);
+    },
+
     switchStory: (storyId) => {
       const story = STORIES.find(s => s.id === storyId) || STORIES[0];
       const initialScene = SCENES[story.initialSceneId];
@@ -356,6 +412,7 @@ export const useSessionStore = create<SessionState>((set, get) => {
         currentStoryId: story.id,
         currentSceneId: story.initialSceneId,
         currentScene: initialScene,
+        sceneHistory: [],
         stage: 'transition',
         narrativeTextIndex: 0,
         revealedHotspots: [],
@@ -436,6 +493,7 @@ export const useSessionStore = create<SessionState>((set, get) => {
         stage: 'caution',
         currentSceneId: initialSceneKey,
         currentScene: SCENES[initialSceneKey],
+        sceneHistory: [],
         narrativeTextIndex: 0,
         revealedHotspots: [],
         currentEndingKey: null,

@@ -92,7 +92,6 @@ export const OpeningSequence: React.FC = () => {
       {/* Cinematic Overlays */}
       <div className="cinematic-vignette-blood" />
       <div className="film-grain" />
-      <div className="crt-scanlines opacity-50" />
 
       {/* Skip Intro Button (available anytime for replayability) */}
       <button

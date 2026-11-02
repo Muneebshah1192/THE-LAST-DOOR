@@ -60,25 +60,6 @@
   z-index: 31;
 }
 
-/* Scanline / CRT Subtle Interference */
-.crt-scanlines {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    rgba(16, 16, 16, 0) 50%, 
-    rgba(5, 5, 5, 0.3) 50%
-  ), linear-gradient(
-    90deg,
-    rgba(162, 13, 25, 0.03),
-    rgba(0, 0, 0, 0.01),
-    rgba(118, 9, 9, 0.02)
-  );
-  background-size: 100% 3px, 6px 100%;
-  pointer-events: none;
-  z-index: 35;
-  opacity: 0.65;
-}
-
 /* Subtle Flashlight Lighting Mask */
 .flashlight-layer {
   position: absolute;
