@@ -5,7 +5,9 @@ import { tensionDirector } from '../engine/tensionDirector';
 import { anomalyEngine, INITIAL_ANOMALIES } from '../engine/anomalyEngine';
 import { encounterDirector } from '../engine/encounterDirector';
 import { creatureDirector, CREATURE_ROSTER } from '../engine/creatureDirector';
-import { SCENES, ENDINGS } from '../engine/storyData';
+import { SCENES, ENDINGS, STORIES } from '../engine/storyData';
+import { MASTER_ITEMS } from '../engine/inventoryEngine';
+import { PUZZLE_REGISTRY } from '../engine/puzzleEngine';
 
 describe('Player Memory Engine', () => {
   beforeEach(() => {
@@ -161,33 +163,110 @@ describe('Encounter Director', () => {
   });
 });
 
-describe('Story & Scene Data Integrity', () => {
-  it('contains all 5 planned scenes', () => {
-    const sceneKeys = Object.keys(SCENES);
-    expect(sceneKeys).toEqual([
-      'house-porch',
-      'house-foyer',
-      'house-parlor',
-      'house-hallway',
-      'house-impossible-room'
-    ]);
+describe('5 Playable Horror Stories & Universe Hub', () => {
+  it('registers all 5 distinct horror story chapters', () => {
+    expect(STORIES.length).toBe(5);
+    const storyIds = STORIES.map(s => s.id);
+    expect(storyIds).toContain('the-house-that-breathes');
+    expect(storyIds).toContain('floor-13');
+    expect(storyIds).toContain('the-empty-hospital');
+    expect(storyIds).toContain('the-forest');
+    expect(storyIds).toContain('the-mirror');
   });
 
-  it('ensures hallway choices lead to valid target scenes', () => {
-    const hallway = SCENES['house-hallway'];
-    expect(hallway.choices).toBeDefined();
-    expect(hallway.choices?.length).toBe(2);
+  it('contains valid scenes and hotspots for all 5 stories', () => {
+    const sceneKeys = Object.keys(SCENES);
+    expect(sceneKeys.length).toBe(17);
 
-    hallway.choices?.forEach((choice) => {
-      expect(SCENES[choice.leadsToSceneId]).toBeDefined();
+    // Verify key starting scenes for each story exist
+    expect(SCENES['house-porch']).toBeDefined();
+    expect(SCENES['floor13-elevator']).toBeDefined();
+    expect(SCENES['hospital-reception']).toBeDefined();
+    expect(SCENES['forest-path']).toBeDefined();
+    expect(SCENES['mirror-chamber']).toBeDefined();
+
+    // Verify all scenes have narrative lines and hotspots
+    Object.values(SCENES).forEach(scene => {
+      expect(scene.id).toBeDefined();
+      expect(scene.title).toBeDefined();
+      expect(scene.narrativeText.length).toBeGreaterThan(0);
+      expect(scene.hotspots.length).toBeGreaterThan(0);
     });
   });
 
-  it('contains both planned endings with full taglines and summaries', () => {
+  it('contains all story escape endings with taglines and summaries', () => {
     expect(ENDINGS['ending_impossible_room']).toBeDefined();
+    expect(ENDINGS['ending_floor13_escape']).toBeDefined();
+    expect(ENDINGS['ending_hospital_escape']).toBeDefined();
+    expect(ENDINGS['ending_forest_escape']).toBeDefined();
+    expect(ENDINGS['ending_mirror_escape']).toBeDefined();
     expect(ENDINGS['ending_retreat']).toBeDefined();
 
-    expect(ENDINGS['ending_impossible_room'].tagline).toContain('You were not the first person to find this room.');
-    expect(ENDINGS['ending_retreat'].tagline).toContain('The door closed. Something stayed behind with you.');
+    expect(ENDINGS['ending_impossible_room'].tagline).toContain('The House That Breathes');
+    expect(ENDINGS['ending_floor13_escape'].tagline).toContain('Floor 13');
+    expect(ENDINGS['ending_hospital_escape'].tagline).toContain('Wrong room');
+    expect(ENDINGS['ending_forest_escape'].tagline).toContain('stone altar');
+    expect(ENDINGS['ending_mirror_escape'].tagline).toContain('reflection');
+  });
+});
+
+describe('Interactive Inventory & Evidence Inspection Engine', () => {
+  it('registers master escape items with inspection clues', () => {
+    const itemIds = Object.keys(MASTER_ITEMS);
+    expect(itemIds).toContain('brass_key_17');
+    expect(itemIds).toContain('torn_journal_page');
+    expect(itemIds).toContain('maintenance_key');
+    expect(itemIds).toContain('breaker_fuse');
+    expect(itemIds).toContain('patient_chart_742');
+    expect(itemIds).toContain('surgical_scalpel');
+    expect(itemIds).toContain('brass_compass');
+    expect(itemIds).toContain('ritual_flint');
+    expect(itemIds).toContain('glass_shard');
+    expect(itemIds).toContain('iron_crypt_key');
+  });
+
+  it('provides inspectable reverse clues on items like the journal page', () => {
+    const page = MASTER_ITEMS['torn_journal_page'];
+    expect(page.backSideText).toBeDefined();
+    expect(page.backSideText).toContain('03:17');
+  });
+
+  it('provides inspectable reverse clues on patient chart 742', () => {
+    const chart = MASTER_ITEMS['patient_chart_742'];
+    expect(chart.backSideText).toBeDefined();
+    expect(chart.backSideText).toContain('0742');
+  });
+});
+
+describe('Interactive Puzzle Engine', () => {
+  it('registers all story puzzles and combination locks', () => {
+    expect(PUZZLE_REGISTRY['house_mantel_cupboard']).toBeDefined();
+    expect(PUZZLE_REGISTRY['elevator_breaker_box']).toBeDefined();
+    expect(PUZZLE_REGISTRY['hospital_medicine_safe']).toBeDefined();
+    expect(PUZZLE_REGISTRY['mirror_crypt_lock']).toBeDefined();
+  });
+
+  it('validates Story 1 mantel lock code tied to the frozen clock (03:17 -> 0317)', () => {
+    const puzzle = PUZZLE_REGISTRY['house_mantel_cupboard'];
+    expect(puzzle.correctCode).toBe('0317');
+    expect(puzzle.rewardItemId).toBe('brass_key_17');
+  });
+
+  it('validates Story 2 breaker box requires breaker_fuse', () => {
+    const puzzle = PUZZLE_REGISTRY['elevator_breaker_box'];
+    expect(puzzle.requiredItemId).toBe('breaker_fuse');
+    expect(puzzle.rewardItemId).toBe('maintenance_key');
+  });
+
+  it('validates Story 3 hospital safe code (Patient #742 -> 0742)', () => {
+    const puzzle = PUZZLE_REGISTRY['hospital_medicine_safe'];
+    expect(puzzle.correctCode).toBe('0742');
+    expect(puzzle.rewardItemId).toBe('surgical_scalpel');
+  });
+
+  it('validates Story 5 mirror cipher (1366 inverted through shard -> 6631)', () => {
+    const puzzle = PUZZLE_REGISTRY['mirror_crypt_lock'];
+    expect(puzzle.correctCode).toBe('6631');
+    expect(puzzle.rewardItemId).toBe('iron_crypt_key');
   });
 });

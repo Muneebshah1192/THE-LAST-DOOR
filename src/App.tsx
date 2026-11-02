@@ -1,8 +1,9 @@
-// The Last Door - Root Application Component
+// The Last Door V3 - Root Application Coordinator
 import React, { useEffect, Component, ErrorInfo, ReactNode } from 'react';
 import { useSessionStore } from './store/sessionStore';
 import { OpeningSequence } from './components/OpeningSequence';
 import { CautionScreen } from './components/CautionScreen';
+import { StorySelectHub } from './components/StorySelectHub';
 import { TransitionScreen } from './components/TransitionScreen';
 import { CinematicViewport } from './components/CinematicViewport';
 import { EndingScreen } from './components/EndingScreen';
@@ -35,14 +36,14 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
     if (this.state.hasError) {
       return (
         <div className="w-screen h-screen bg-void flex flex-col items-center justify-center p-6 text-center text-bone font-mono">
-          <p className="text-xs uppercase tracking-[0.3em] text-crimson mb-2">SIGNAL CORRUPTED</p>
+          <p className="text-xs uppercase tracking-[0.3em] text-blood-light mb-2">SIGNAL CORRUPTED</p>
           <h1 className="font-cinematic text-lg tracking-widest mb-4">THE LAST DOOR</h1>
-          <p className="text-xs text-dust/70 max-w-md mb-6 leading-relaxed">
+          <p className="text-xs text-dust max-w-md mb-6 leading-relaxed">
             The threshold experienced an unexpected fracture. No personal data was affected.
           </p>
           <button
             onClick={() => window.location.reload()}
-            className="btn-cinematic px-6 py-2 text-xs uppercase tracking-widest cursor-pointer"
+            className="btn-blood-enter px-6 py-2.5 text-xs uppercase tracking-widest cursor-pointer font-bold"
           >
             RE-ENTER THRESHOLD
           </button>
@@ -55,10 +56,11 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
 
 export const App: React.FC = () => {
   const stage = useSessionStore((state) => state.stage);
+  const setStage = useSessionStore((state) => state.setStage);
   const setReducedMotion = useSessionStore((state) => state.setReducedMotion);
+  const switchStory = useSessionStore((state) => state.switchStory);
 
   useEffect(() => {
-    // Respect system prefers-reduced-motion
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
     if (mediaQuery.matches) {
       setReducedMotion(true);
@@ -77,9 +79,20 @@ export const App: React.FC = () => {
       <main className="w-screen h-screen overflow-hidden bg-void text-bone relative">
         {stage === 'opening' && <OpeningSequence />}
         {stage === 'caution' && <CautionScreen />}
+        {stage === 'story-hub' && (
+          <StorySelectHub
+            onSelectStory={(storyId) => switchStory(storyId)}
+            onBackToCaution={() => setStage('caution')}
+          />
+        )}
         {stage === 'transition' && <TransitionScreen />}
         {stage === 'cinematic' && <CinematicViewport />}
-        {stage === 'ending' && <EndingScreen />}
+        {stage === 'ending' && (
+          <EndingScreen
+            onOpenStoryHub={() => setStage('story-hub')}
+            onNextStory={(nextStoryId) => switchStory(nextStoryId)}
+          />
+        )}
         {stage === 'archive' && <ArchiveOverlay />}
       </main>
     </ErrorBoundary>

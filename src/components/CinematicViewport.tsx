@@ -1,4 +1,4 @@
-// The Last Door V2 - Cinematic Viewport, Camera Rig & Hostile Environment
+// The Last Door V3 - Cinematic Viewport, Camera Rig & Inventory
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSessionStore } from '../store/sessionStore';
@@ -9,6 +9,7 @@ import { ChoiceOverlay } from './ChoiceOverlay';
 import { AudioHUD } from './AudioHUD';
 import { PeripheralAnomaly } from './PeripheralAnomaly';
 import { GlitchText } from './GlitchText';
+import { InventoryBar } from './InventoryBar';
 
 export const CinematicViewport: React.FC = () => {
   const currentScene = useSessionStore((state) => state.currentScene);
@@ -19,6 +20,9 @@ export const CinematicViewport: React.FC = () => {
   const tensionLevel = useSessionStore((state) => state.tensionLevel);
   const isPaused = useSessionStore((state) => state.isPaused);
   const togglePause = useSessionStore((state) => state.togglePause);
+  const inventory = useSessionStore((state) => state.inventory);
+  const selectedItemId = useSessionStore((state) => state.selectedItemId);
+  const setSelectedItemId = useSessionStore((state) => state.setSelectedItemId);
 
   const [narrativeLine, setNarrativeLine] = useState<string>('');
 
@@ -113,11 +117,18 @@ export const CinematicViewport: React.FC = () => {
               transition={{ duration: 1.2 }}
               className="font-mono text-xs md:text-sm tracking-[0.25em] text-bone uppercase drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)]"
             >
-              <GlitchText text={narrativeLine} corruptChance={0.07} />
+              <GlitchText text={narrativeLine} corruptChance={0.06} />
             </motion.p>
           )}
         </AnimatePresence>
       </div>
+
+      {/* Player Inventory Dock (Bottom-Left) */}
+      <InventoryBar
+        items={inventory}
+        selectedItemId={selectedItemId}
+        onSelectItem={setSelectedItemId}
+      />
 
       {/* Decision / Choice Overlay */}
       {currentScene.choices && currentScene.choices.length > 0 && (
@@ -146,7 +157,7 @@ export const CinematicViewport: React.FC = () => {
               <div className="space-y-3">
                 <button
                   onClick={togglePause}
-                  className="btn-blood-enter w-full py-3 text-xs font-mono uppercase tracking-widest cursor-pointer"
+                  className="btn-blood-enter w-full py-3 text-xs font-mono uppercase tracking-widest cursor-pointer font-bold"
                 >
                   RESUME
                 </button>

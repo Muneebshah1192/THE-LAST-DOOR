@@ -1,17 +1,19 @@
-// The Last Door V2 - Global Session Store (Zustand)
+// The Last Door V3 - Global Session Store with 5 Stories & Inventory
 import { create } from 'zustand';
 import { HorrorIntensity, EncounterType, SceneDef } from '../engine/types';
-import { SCENES } from '../engine/storyData';
+import { SCENES, STORIES } from '../engine/storyData';
 import { memoryEngine } from '../engine/memoryEngine';
 import { tensionDirector } from '../engine/tensionDirector';
 import { anomalyEngine } from '../engine/anomalyEngine';
 import { encounterDirector } from '../engine/encounterDirector';
 import { creatureDirector, EntityId } from '../engine/creatureDirector';
 import { audioDirector } from '../engine/audioDirector';
+import { InventoryItem, MASTER_ITEMS } from '../engine/inventoryEngine';
 
 export type AppStage = 
   | 'opening'
   | 'caution'
+  | 'story-hub'
   | 'transition'
   | 'cinematic'
   | 'ending'
@@ -19,17 +21,22 @@ export type AppStage =
 
 interface SessionState {
   stage: AppStage;
+  currentStoryId: string;
   currentSceneId: string;
   currentScene: SceneDef;
   narrativeTextIndex: number;
   revealedHotspots: string[];
-  flashlightPos: { x: number; y: number }; // Percentage 0-100
-  flashlightBattery: number; // 0 to 100
-  flashlightFailure: boolean; // Temporary outage under extreme tension
+  flashlightPos: { x: number; y: number };
+  flashlightBattery: number;
+  flashlightFailure: boolean;
   
+  // Inventory & Evidence
+  inventory: InventoryItem[];
+  selectedItemId: string | null;
+
   // Audio & Accessibility
   soundEnabled: boolean;
-  volume: number; // 0 to 1
+  volume: number;
   reducedMotion: boolean;
   horrorIntensity: HorrorIntensity;
   isPaused: boolean;
@@ -66,14 +73,23 @@ interface SessionState {
   setReducedMotion: (reduced: boolean) => void;
   togglePause: () => void;
   updateFlashlight: (x: number, y: number) => void;
+  
+  // Inventory actions
+  addItemToInventory: (item: InventoryItem) => void;
+  removeItemFromInventory: (itemId: string) => void;
+  setSelectedItemId: (itemId: string | null) => void;
+
+  // Story & Scene actions
   inspectHotspot: (hotspotId: string) => void;
   performContextAction: (actionType: 'listen' | 'touch' | 'inspect', hotspotId: string) => void;
   selectChoice: (choiceId: string, leadsToSceneId: string, tensionImpact: number) => void;
   advanceScene: (targetSceneId: string) => void;
+  switchStory: (storyId: string) => void;
   clearTransitionEncounter: () => void;
   tickSession: (deltaSeconds: number) => void;
   openArchive: () => void;
   closeArchive: () => void;
+  openStoryHub: () => void;
   restartExperience: () => void;
 }
 
@@ -82,6 +98,7 @@ export const useSessionStore = create<SessionState>((set, get) => {
 
   return {
     stage: 'opening',
+    currentStoryId: 'the-house-that-breathes',
     currentSceneId: 'house-porch',
     currentScene: SCENES['house-porch'],
     narrativeTextIndex: 0,
@@ -90,13 +107,16 @@ export const useSessionStore = create<SessionState>((set, get) => {
     flashlightBattery: 100,
     flashlightFailure: false,
 
+    inventory: [MASTER_ITEMS['torn_journal_page']], // Initial journal entry clue
+    selectedItemId: null,
+
     soundEnabled: true,
     volume: 0.8,
     reducedMotion: false,
     horrorIntensity: 'standard',
     isPaused: false,
 
-    tensionLevel: 12,
+    tensionLevel: 15,
     tensionLabel: 'LOW',
     activeAnomalies: [],
     activeEncounter: null,
@@ -131,6 +151,8 @@ export const useSessionStore = create<SessionState>((set, get) => {
       creatureDirector.reset();
 
       const memory = memoryEngine.getMemory();
+      const storyId = get().currentStoryId;
+      const initialSceneKey = STORIES.find(s => s.id === storyId)?.initialSceneId || 'house-porch';
 
       set({
         stage: 'transition',
@@ -138,8 +160,8 @@ export const useSessionStore = create<SessionState>((set, get) => {
         totalVisits: visitNumber,
         theHouseRemembers: isReturnVisit,
         parlorPhotoFigureCount: memory.parlorPhotoFigureCount,
-        currentSceneId: 'house-porch',
-        currentScene: SCENES['house-porch'],
+        currentSceneId: initialSceneKey,
+        currentScene: SCENES[initialSceneKey],
         narrativeTextIndex: 0,
         revealedHotspots: [],
         currentEndingKey: null,
@@ -151,7 +173,7 @@ export const useSessionStore = create<SessionState>((set, get) => {
 
       setTimeout(() => {
         set({ stage: 'cinematic' });
-      }, 2200);
+      }, 2000);
     },
 
     exitExperience: () => {
@@ -185,6 +207,24 @@ export const useSessionStore = create<SessionState>((set, get) => {
       set({ flashlightPos: { x, y } });
     },
 
+    addItemToInventory: (item) => {
+      const current = get().inventory;
+      if (!current.some((i) => i.id === item.id)) {
+        set({ inventory: [...current, item] });
+      }
+    },
+
+    removeItemFromInventory: (itemId) => {
+      set({
+        inventory: get().inventory.filter((i) => i.id !== itemId),
+        selectedItemId: get().selectedItemId === itemId ? null : get().selectedItemId
+      });
+    },
+
+    setSelectedItemId: (itemId) => {
+      set({ selectedItemId: itemId });
+    },
+
     inspectHotspot: (hotspotId) => {
       const state = get();
       const hotspot = state.currentScene.hotspots.find(h => h.id === hotspotId);
@@ -194,7 +234,6 @@ export const useSessionStore = create<SessionState>((set, get) => {
         set({ revealedHotspots: [...state.revealedHotspots, hotspotId] });
       }
 
-      // Audio cues
       if (hotspot.id === 'foyer-clock') {
         audioDirector.startClockTick();
       } else if (hotspot.id === 'porch-door') {
@@ -220,10 +259,13 @@ export const useSessionStore = create<SessionState>((set, get) => {
         get().advanceScene('house-parlor');
       } else if (hotspot.id === 'parlor-hallway-door') {
         get().advanceScene('house-hallway');
+      } else if (hotspot.id === 'elevator-doorway') {
+        get().advanceScene('floor13-hallway');
+      } else if (hotspot.id === 'hospital-ward-door') {
+        get().advanceScene('hospital-hallway');
       }
     },
 
-    // Contextual interaction (LISTEN FIRST, TOUCH, etc.)
     performContextAction: (actionType, hotspotId) => {
       if (actionType === 'listen') {
         audioDirector.triggerSuddenSilence(3000);
@@ -235,7 +277,7 @@ export const useSessionStore = create<SessionState>((set, get) => {
           } else {
             audioDirector.playBansheeScream(0.2);
           }
-        }, 1200);
+        }, 1000);
       }
     },
 
@@ -253,9 +295,9 @@ export const useSessionStore = create<SessionState>((set, get) => {
 
       const currentTension = tensionDirector.getTension();
 
-      // Sudden Face Encounter check on transition! (Section 4)
+      // Sudden Face Encounter check
       let faceEncounter: EntityId | null = null;
-      if (currentTension > 45 && Math.random() < 0.4) {
+      if (currentTension > 45 && Math.random() < 0.45) {
         const scaryEntities: EntityId[] = ['banshee', 'hag', 'she-devil', 'hollow-woman'];
         faceEncounter = scaryEntities[Math.floor(Math.random() * scaryEntities.length)];
       }
@@ -265,29 +307,29 @@ export const useSessionStore = create<SessionState>((set, get) => {
         transitionFaceEncounter: faceEncounter
       });
 
-      if (targetSceneId === 'house-foyer') {
+      if (targetSceneId.includes('foyer') || targetSceneId.includes('elevator')) {
         audioDirector.playDoorLatch();
         audioDirector.startClockTick();
-      } else if (targetSceneId === 'house-hallway') {
+      } else {
         audioDirector.stopClockTick();
       }
 
-      // Duration allows FaceReveal if active
-      const transitionDuration = faceEncounter ? 2800 : 1800;
+      const transitionDuration = faceEncounter ? 2800 : 1600;
 
       setTimeout(() => {
         tensionDirector.setTargetTension(nextScene.targetTension);
 
         if (nextScene.isEndingScene) {
-          memoryEngine.recordStoryCompleted('the-house-that-breathes', nextScene.endingKey || 'ending_impossible_room');
+          const endingKey = nextScene.endingKey || 'ending_impossible_room';
+          memoryEngine.recordStoryCompleted(get().currentStoryId, endingKey);
           const mem = memoryEngine.getMemory();
           set({
-            stage: 'cinematic',
+            stage: 'ending',
             currentSceneId: targetSceneId,
             currentScene: nextScene,
             narrativeTextIndex: 0,
             revealedHotspots: [],
-            currentEndingKey: nextScene.endingKey || 'ending_impossible_room',
+            currentEndingKey: endingKey,
             unlockedEndings: mem.unlockedEndings,
             transitionFaceEncounter: null
           });
@@ -304,6 +346,28 @@ export const useSessionStore = create<SessionState>((set, get) => {
       }, transitionDuration);
     },
 
+    switchStory: (storyId) => {
+      const story = STORIES.find(s => s.id === storyId) || STORIES[0];
+      const initialScene = SCENES[story.initialSceneId];
+
+      audioDirector.playOpeningImpact();
+
+      set({
+        currentStoryId: story.id,
+        currentSceneId: story.initialSceneId,
+        currentScene: initialScene,
+        stage: 'transition',
+        narrativeTextIndex: 0,
+        revealedHotspots: [],
+        currentEndingKey: null,
+        inventory: story.id === 'the-house-that-breathes' ? [MASTER_ITEMS['torn_journal_page']] : []
+      });
+
+      setTimeout(() => {
+        set({ stage: 'cinematic' });
+      }, 1800);
+    },
+
     clearTransitionEncounter: () => {
       set({ transitionFaceEncounter: null });
     },
@@ -318,7 +382,7 @@ export const useSessionStore = create<SessionState>((set, get) => {
 
       const activeAnoms = anomalyEngine.evaluateSceneAnomalies(state.currentSceneId, profile.level);
 
-      // Temporary flashlight failure under extreme tension
+      // Flashlight glitch
       if (profile.level > 80 && Math.random() < 0.05 && !state.flashlightFailure) {
         audioDirector.playGlitchStatic();
         set({ flashlightFailure: true });
@@ -329,12 +393,11 @@ export const useSessionStore = create<SessionState>((set, get) => {
 
       // Creature encounter director tick
       let currentCreature = state.activeCreature;
-      if (!currentCreature && Math.random() < 0.1) {
+      if (!currentCreature && Math.random() < 0.12) {
         const nextCreature = creatureDirector.selectNextEntity(profile.level, state.currentSceneId);
         if (nextCreature) {
           currentCreature = nextCreature.id;
           
-          // Audio signature
           if (nextCreature.audioSignature === 'banshee_scream') {
             audioDirector.playBansheeScream(0.4);
           } else if (nextCreature.audioSignature === 'weeping') {
@@ -343,7 +406,6 @@ export const useSessionStore = create<SessionState>((set, get) => {
             audioDirector.playDemonicGrowl(0.1);
           }
 
-          // Auto clear creature after duration
           setTimeout(() => {
             creatureDirector.clearActiveCreature();
             set({ activeCreature: null });
@@ -361,22 +423,27 @@ export const useSessionStore = create<SessionState>((set, get) => {
 
     openArchive: () => set({ stage: 'archive' }),
     closeArchive: () => set({ stage: get().currentEndingKey ? 'ending' : 'caution' }),
+    openStoryHub: () => set({ stage: 'story-hub' }),
 
     restartExperience: () => {
       audioDirector.stopAll();
       tensionDirector.reset();
       creatureDirector.reset();
+      const storyId = get().currentStoryId;
+      const initialSceneKey = STORIES.find(s => s.id === storyId)?.initialSceneId || 'house-porch';
+
       set({
-        stage: 'opening',
-        currentSceneId: 'house-porch',
-        currentScene: SCENES['house-porch'],
+        stage: 'caution',
+        currentSceneId: initialSceneKey,
+        currentScene: SCENES[initialSceneKey],
         narrativeTextIndex: 0,
         revealedHotspots: [],
         currentEndingKey: null,
         flashlightBattery: 100,
         flashlightFailure: false,
         activeCreature: null,
-        transitionFaceEncounter: null
+        transitionFaceEncounter: null,
+        inventory: storyId === 'the-house-that-breathes' ? [MASTER_ITEMS['torn_journal_page']] : []
       });
     }
   };

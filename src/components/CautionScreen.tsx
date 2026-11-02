@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Volume2, VolumeX, Eye, ShieldAlert, Archive } from 'lucide-react';
 import { useSessionStore } from '../store/sessionStore';
 import { HorrorIntensity } from '../engine/types';
+import { STORIES } from '../engine/storyData';
 
 export const CautionScreen: React.FC = () => {
   const enterExperience = useSessionStore((state) => state.enterExperience);
@@ -17,6 +18,8 @@ export const CautionScreen: React.FC = () => {
   const theHouseRemembers = useSessionStore((state) => state.theHouseRemembers);
   const totalVisits = useSessionStore((state) => state.totalVisits);
   const openArchive = useSessionStore((state) => state.openArchive);
+  const openStoryHub = useSessionStore((state) => state.openStoryHub);
+  const currentStoryId = useSessionStore((state) => state.currentStoryId);
 
   const [intensity, setIntensity] = useState<HorrorIntensity>('standard');
   const [isEntering, setIsEntering] = useState<boolean>(false);
@@ -74,6 +77,14 @@ export const CautionScreen: React.FC = () => {
 
         {/* Configuration Controls */}
         <div className="border-t border-dust/15 pt-6 space-y-5 mb-8 text-xs font-mono">
+          {/* Active Story Indicator */}
+          <div className="flex items-center justify-between pb-2 border-b border-dust/10">
+            <span className="text-dust uppercase tracking-wider">Active Manifestation:</span>
+            <span className="text-blood-light font-bold uppercase tracking-wider text-[11px]">
+              {STORIES.find((s) => s.id === currentStoryId)?.title || 'THE HOUSE THAT BREATHES'}
+            </span>
+          </div>
+
           {/* Intensity Selection */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <span className="text-dust uppercase tracking-wider">Horror Intensity:</span>
@@ -159,6 +170,14 @@ export const CautionScreen: React.FC = () => {
             className="px-6 py-4 text-xs tracking-[0.2em] uppercase font-mono text-dust/70 hover:text-blood-light border border-dust/20 hover:border-blood/50 transition-colors cursor-pointer"
           >
             EXIT
+          </button>
+
+          <button
+            onClick={openStoryHub}
+            className="flex items-center justify-center space-x-2 px-4 py-4 text-xs tracking-wider font-mono text-blood-light hover:text-white border border-blood/30 hover:border-blood-crimson bg-blood-dried/20 transition-colors cursor-pointer"
+            title="Browse All 5 Horror Stories"
+          >
+            <span>CHAPTERS (5)</span>
           </button>
 
           <button
