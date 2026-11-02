@@ -1,0 +1,40 @@
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 800' width='100%' height='100%' preserveAspectRatio='xMidYMid meet'>
+  <defs>
+    <radialGradient id='devil-glow' cx='50%' cy='35%' r='50%'>
+      <stop offset='0%' stop-color='#a20d19' stop-opacity='0.6'/>
+      <stop offset='100%' stop-color='#000000' stop-opacity='0'/>
+    </radialGradient>
+  </defs>
+  <!-- Background demon aura -->
+  <circle cx='300' cy='280' r='200' fill='url(#devil-glow)'>
+    <animate attributeName='r' values='170; 220; 170' dur='3s' repeatCount='indefinite'/>
+  </circle>
+  <g>
+    <animateTransform attributeName='transform' type='translate' values='0,0; 0,-8; 0,0' dur='3.6s' repeatCount='indefinite'/>
+    <!-- Curving Demonic Horns -->
+    <path d='M270,190 C250,140 210,100 180,90 C190,110 220,150 255,205 Z' fill='#1a0406' stroke='#a20d19' stroke-width='2'/>
+    <path d='M330,190 C350,140 390,100 420,90 C410,110 380,150 345,205 Z' fill='#1a0406' stroke='#a20d19' stroke-width='2'/>
+    <!-- Head & Shoulders -->
+    <path d='M230,330 C250,290 260,250 265,220 C275,250 325,250 335,220 C340,250 350,290 370,330 C380,420 370,550 350,750 L250,750 C230,550 220,420 230,330 Z' fill='#080405'/>
+    <ellipse cx='300' cy='225' rx='38' ry='50' fill='#140507'/>
+    <!-- Glowing Slit Eyes -->
+    <path d='M280,215 Q290,210 295,215 Q290,220 280,215 Z' fill='#ff2233'>
+      <animate attributeName='opacity' values='1; 0.2; 1; 1' dur='3.5s' repeatCount='indefinite'/>
+    </path>
+    <path d='M320,215 Q310,210 305,215 Q310,220 320,215 Z' fill='#ff2233'>
+      <animate attributeName='opacity' values='1; 0.2; 1; 1' dur='3.5s' repeatCount='indefinite'/>
+    </path>
+    <!-- Sinister Grin -->
+    <path d='M285,245 Q300,260 315,245' stroke='#a20d19' stroke-width='3' fill='none'>
+      <animate attributeName='d' values='
+        M285,245 Q300,260 315,245;
+        M282,242 Q300,268 318,242;
+        M285,245 Q300,260 315,245'
+        dur='4s' repeatCount='indefinite'/>
+    </path>
+    <!-- Chest breathing motion -->
+    <ellipse cx='300' cy='360' rx='50' ry='60' fill='#0e0507'>
+      <animate attributeName='rx' values='48; 54; 48' dur='2.4s' repeatCount='indefinite'/>
+    </ellipse>
+  </g>
+</svg>

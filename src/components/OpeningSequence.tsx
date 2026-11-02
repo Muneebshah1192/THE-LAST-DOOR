@@ -3,6 +3,8 @@ import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSessionStore } from '../store/sessionStore';
 import { audioDirector } from '../engine/audioDirector';
+import { HorrorMedia } from './HorrorMedia';
+import { HORROR_ASSETS } from '../engine/assetRegistry';
 
 export const OpeningSequence: React.FC = () => {
   const proceed = useSessionStore((state) => state.proceedFromOpening);
@@ -164,25 +166,17 @@ export const OpeningSequence: React.FC = () => {
             {/* Disturbing Supernatural Face Glimpse (Appears for 0.38s) */}
             {showFaceFlash && (
               <motion.div
-                initial={{ opacity: 0, scale: 1.2 }}
+                initial={{ opacity: 0, scale: 1.25 }}
                 animate={{ opacity: 0.95, scale: 1 }}
                 exit={{ opacity: 0 }}
-                className="absolute inset-0 -top-20 flex items-center justify-center pointer-events-none z-10"
+                className="absolute inset-0 -top-16 flex items-center justify-center pointer-events-none z-10"
               >
-                <svg className="w-80 h-80 text-blood" viewBox="0 0 200 200">
-                  {/* Sunken skull / demonic feminine visage */}
-                  <ellipse cx="100" cy="95" rx="55" ry="75" fill="#050505" stroke="#760909" strokeWidth="3" />
-                  {/* Hollow black eyes with crimson glint */}
-                  <ellipse cx="78" cy="85" rx="14" ry="18" fill="#000000" />
-                  <ellipse cx="122" cy="85" rx="14" ry="18" fill="#000000" />
-                  <circle cx="78" cy="86" r="3" fill="#A20D19" />
-                  <circle cx="122" cy="86" r="3" fill="#A20D19" />
-                  {/* Agonized wide mouth */}
-                  <path d="M 72 135 Q 100 170 128 135 Q 100 150 72 135 Z" fill="#430609" stroke="#760909" strokeWidth="2" />
-                  {/* Disheveled hair strands */}
-                  <path d="M 40 40 Q 60 110 50 180" stroke="#101010" strokeWidth="4" fill="none" />
-                  <path d="M 160 40 Q 140 110 150 180" stroke="#101010" strokeWidth="4" fill="none" />
-                </svg>
+                <div className="w-96 h-96 drop-shadow-[0_0_60px_#A20D19]">
+                  <HorrorMedia
+                    asset={HORROR_ASSETS['face_demon_jumpscare']}
+                    className="w-full h-full object-contain filter contrast-125"
+                  />
+                </div>
               </motion.div>
             )}
 
@@ -201,19 +195,27 @@ export const OpeningSequence: React.FC = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 1.0 }}
-            className="text-center font-mono space-y-3 px-6 max-w-md z-20 tracking-widest text-xs"
+            className="relative text-center font-mono space-y-3 px-6 max-w-md z-20 tracking-widest text-xs"
           >
-            <p className="text-dust/80">SIGNAL DETECTED &mdash; ARCHIVE RECOVERED</p>
-            <p className="text-blood font-semibold tracking-[0.2em] animate-pulse">
+            {/* VHS Static Cam Background Glitch */}
+            <div className="absolute inset-0 -inset-x-20 pointer-events-none opacity-25 mix-blend-screen">
+              <HorrorMedia
+                asset={HORROR_ASSETS['glitch_vhs_static_cam']}
+                className="w-full h-full object-cover"
+              />
+            </div>
+
+            <p className="text-dust/80 relative z-10">SIGNAL DETECTED &mdash; ARCHIVE RECOVERED</p>
+            <p className="text-blood font-semibold tracking-[0.2em] animate-pulse relative z-10">
               UNKNOWN PRESENCE DETECTED
             </p>
-            <div className="border border-dust/20 bg-abyss/80 py-3 px-6 mt-4">
+            <div className="border border-dust/20 bg-abyss/80 py-3 px-6 mt-4 relative z-10">
               <p className="text-dust/60 text-[10px]">CORRUPTED RECORDING TIMESTAMP</p>
               <p className="font-mono text-base md:text-lg text-blood-distortion font-bold pt-1">
                 {corruptedTimestamp}
               </p>
             </div>
-            <p className="text-dust/70 text-[11px] pt-2">LAST KNOWN LOCATION: UNKNOWN</p>
+            <p className="text-dust/70 text-[11px] pt-2 relative z-10">LAST KNOWN LOCATION: UNKNOWN</p>
           </motion.div>
         )}
       </AnimatePresence>
@@ -227,21 +229,20 @@ export const OpeningSequence: React.FC = () => {
             transition={{ duration: 1.4 }}
             className="relative text-center px-6 max-w-lg z-20 space-y-6"
           >
-            {/* Shadowy Female Silhouette looming behind text */}
+            {/* Shadowy Female Apparition looming behind text */}
             {showSilhouette && (
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: [0, 0.75, 0.2] }}
+                animate={{ opacity: [0, 0.75, 0.25] }}
                 transition={{ duration: 2.2 }}
                 className="absolute inset-0 -top-24 flex items-center justify-center pointer-events-none z-0"
               >
-                <svg className="w-96 h-96 opacity-60" viewBox="0 0 200 300">
-                  {/* Slender ghostly female silhouette */}
-                  <ellipse cx="100" cy="50" rx="16" ry="22" fill="#000000" />
-                  <path d="M 85 70 Q 100 65 115 70 L 140 260 L 60 260 Z" fill="#08080a" />
-                  <path d="M 80 50 Q 70 120 75 190" stroke="#000000" strokeWidth="5" fill="none" />
-                  <path d="M 120 50 Q 130 120 125 190" stroke="#000000" strokeWidth="5" fill="none" />
-                </svg>
+                <div className="w-80 h-96 opacity-60">
+                  <HorrorMedia
+                    asset={HORROR_ASSETS['ghost_banshee_float']}
+                    className="w-full h-full object-contain"
+                  />
+                </div>
               </motion.div>
             )}
 

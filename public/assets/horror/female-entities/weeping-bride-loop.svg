@@ -1,0 +1,22 @@
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 500 800' width='100%' height='100%'>
+  <g>
+    <!-- Subtle shoulder trembling -->
+    <animateTransform attributeName='transform' type='translate' values='0,0; 1,-2; -1,0; 0,1; 0,0' dur='0.4s' repeatCount='indefinite'/>
+    <!-- Decayed Yellowed Wedding Dress -->
+    <path d='M200,320 C180,480 140,650 110,780 L390,780 C360,650 320,480 300,320 Z' fill='#1b1c1d' stroke='#2b2d30' stroke-width='2'/>
+    <!-- Torn Lace Overhang -->
+    <path d='M130,760 Q250,710 370,760 L390,780 L110,780 Z' fill='#0e0e11'/>
+    <!-- Severely bent neck and head -->
+    <path d='M230,220 C220,260 210,310 230,340 L270,340 C290,310 280,260 270,220 Z' fill='#141518'/>
+    <!-- Head tilted unnaturally to side -->
+    <ellipse cx='240' cy='190' rx='36' ry='48' fill='#d0cdc6' transform='rotate(-22 240 190)'/>
+    <!-- Dirty lace veil draping down -->
+    <path d='M190,160 Q230,140 280,180 Q290,260 270,380 L180,340 Z' fill='#24262b' opacity='0.75'>
+      <animate attributeName='opacity' values='0.7; 0.85; 0.7' dur='2s' repeatCount='indefinite'/>
+    </path>
+    <!-- Blood tears streaming -->
+    <path d='M235,190 L233,230' stroke='#a20d19' stroke-width='2' stroke-linecap='round'>
+      <animate attributeName='y2' values='220; 245; 220' dur='2.5s' repeatCount='indefinite'/>
+    </path>
+  </g>
+</svg>

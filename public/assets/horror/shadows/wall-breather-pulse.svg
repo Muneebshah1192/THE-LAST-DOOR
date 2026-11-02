@@ -1,0 +1,20 @@
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 600' width='100%' height='100%'>
+  <defs>
+    <radialGradient id='plaster-bulge' cx='50%' cy='50%' r='50%'>
+      <stop offset='0%' stop-color='#2a0508' stop-opacity='0.85'/>
+      <stop offset='60%' stop-color='#120305' stop-opacity='0.4'/>
+      <stop offset='100%' stop-color='#000000' stop-opacity='0'/>
+    </radialGradient>
+  </defs>
+  <ellipse cx='300' cy='300' rx='160' ry='160' fill='url(#plaster-bulge)'>
+    <animate attributeName='rx' values='140; 210; 140' dur='4s' repeatCount='indefinite' calcMode='spline' keySplines='0.4 0 0.6 1; 0.4 0 0.6 1'/>
+    <animate attributeName='ry' values='140; 210; 140' dur='4s' repeatCount='indefinite' calcMode='spline' keySplines='0.4 0 0.6 1; 0.4 0 0.6 1'/>
+  </ellipse>
+  <!-- Stretched cracked wallpaper seams -->
+  <path d='M260,200 Q290,300 270,400' stroke='#a20d19' stroke-width='1.5' fill='none' opacity='0.7'>
+    <animate attributeName='stroke-width' values='1.2; 3; 1.2' dur='4s' repeatCount='indefinite'/>
+  </path>
+  <path d='M340,200 Q310,300 330,400' stroke='#a20d19' stroke-width='1.5' fill='none' opacity='0.7'>
+    <animate attributeName='stroke-width' values='1.2; 3; 1.2' dur='4s' repeatCount='indefinite'/>
+  </path>
+</svg>

@@ -1,0 +1,24 @@
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 500 900' width='100%' height='100%'>
+  <g opacity='0.92'>
+    <animateTransform attributeName='transform' type='translate' values='-20,0; 20,0; -20,0' dur='8s' repeatCount='indefinite' calcMode='spline' keySplines='0.4 0 0.6 1; 0.4 0 0.6 1'/>
+    <!-- Head (faceless, pale shadow) -->
+    <ellipse cx='250' cy='120' rx='28' ry='48' fill='#08080a'/>
+    <!-- Extremely elongated neck & torso -->
+    <path d='M235,165 L230,420 L220,780 L240,880 L250,620 L260,880 L280,780 L270,420 L265,165 Z' fill='#050507'/>
+    <!-- Long spider-like arms -->
+    <path d='M230,220 Q180,380 150,560 Q130,680 120,760' stroke='#050507' stroke-width='16' stroke-linecap='round' fill='none'>
+      <animate attributeName='d' values='
+        M230,220 Q180,380 150,560 Q130,680 120,760;
+        M230,220 Q170,390 140,570 Q110,690 100,770;
+        M230,220 Q180,380 150,560 Q130,680 120,760'
+        dur='4s' repeatCount='indefinite'/>
+    </path>
+    <path d='M270,220 Q320,380 350,560 Q370,680 380,760' stroke='#050507' stroke-width='16' stroke-linecap='round' fill='none'>
+      <animate attributeName='d' values='
+        M270,220 Q320,380 350,560 Q370,680 380,760;
+        M270,220 Q330,390 360,570 Q390,690 400,770;
+        M270,220 Q320,380 350,560 Q370,680 380,760'
+        dur='4.3s' repeatCount='indefinite'/>
+    </path>
+  </g>
+</svg>

@@ -1,0 +1,61 @@
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 800' width='100%' height='100%' preserveAspectRatio='xMidYMid meet'>
+  <defs>
+    <filter id='banshee-glow' x='-30%' y='-30%' width='160%' height='160%'>
+      <feGaussianBlur stdDeviation='8' result='blur'/>
+      <feColorMatrix type='matrix' values='
+        0.8 0 0 0 0.4
+        0 0.1 0 0 0
+        0 0 0.1 0 0
+        0 0 0 0.9 0' result='glow'/>
+      <feMerge>
+        <feMergeNode in='glow'/>
+        <feMergeNode in='SourceGraphic'/>
+      </feMerge>
+    </filter>
+  </defs>
+  <!-- Floating root animation -->
+  <g filter='url(#banshee-glow)'>
+    <animateTransform attributeName='transform' type='translate' values='0,0; 0,-20; 0,0' dur='4.5s' repeatCount='indefinite' calcMode='spline' keySplines='0.4 0 0.6 1; 0.4 0 0.6 1'/>
+    <!-- Shroud trailing hem -->
+    <path d='M250,350 Q230,550 200,750 Q280,720 300,740 Q320,720 400,750 Q370,550 350,350 Z' fill='#0e0e12' opacity='0.85'>
+      <animate attributeName='d' values='
+        M250,350 Q230,550 200,750 Q280,720 300,740 Q320,720 400,750 Q370,550 350,350 Z;
+        M250,350 Q210,540 215,750 Q270,735 300,735 Q330,735 385,750 Q390,540 350,350 Z;
+        M250,350 Q230,550 200,750 Q280,720 300,740 Q320,720 400,750 Q370,550 350,350 Z'
+        dur='3.2s' repeatCount='indefinite'/>
+    </path>
+    <!-- Skeletal torso & neck -->
+    <path d='M275,250 C270,300 260,380 270,420 C290,430 310,430 330,420 C340,380 330,300 325,250 Z' fill='#181a20' opacity='0.9'/>
+    <!-- Gaunt Hollow Head -->
+    <ellipse cx='300' cy='200' rx='45' ry='65' fill='#d8d6d2' opacity='0.95'/>
+    <path d='M270,220 C275,245 285,260 300,262 C315,260 325,245 330,220 Z' fill='#08080a'/>
+    <!-- Screaming Agonized Jaw -->
+    <ellipse cx='300' cy='238' rx='14' ry='22' fill='#000000'>
+      <animate attributeName='ry' values='18; 26; 18' dur='1.8s' repeatCount='indefinite'/>
+    </ellipse>
+    <!-- Hollow Sunken Eyes with Blood Red Glint -->
+    <ellipse cx='282' cy='190' rx='9' ry='12' fill='#050505'/>
+    <circle cx='282' cy='190' r='3' fill='#a20d19'>
+      <animate attributeName='r' values='2; 4; 2' dur='1.2s' repeatCount='indefinite'/>
+    </circle>
+    <ellipse cx='318' cy='190' rx='9' ry='12' fill='#050505'/>
+    <circle cx='318' cy='190' r='3' fill='#a20d19'>
+      <animate attributeName='r' values='2; 4; 2' dur='1.2s' repeatCount='indefinite'/>
+    </circle>
+    <!-- Moving Disheveled Hair Tendrils -->
+    <path d='M260,160 Q210,180 180,260 Q170,360 190,440' stroke='#08080a' stroke-width='14' fill='none' stroke-linecap='round'>
+      <animate attributeName='d' values='
+        M260,160 Q210,180 180,260 Q170,360 190,440;
+        M260,160 Q200,200 170,280 Q160,370 180,450;
+        M260,160 Q210,180 180,260 Q170,360 190,440'
+        dur='2.6s' repeatCount='indefinite'/>
+    </path>
+    <path d='M340,160 Q390,180 420,260 Q430,360 410,440' stroke='#08080a' stroke-width='14' fill='none' stroke-linecap='round'>
+      <animate attributeName='d' values='
+        M340,160 Q390,180 420,260 Q430,360 410,440;
+        M340,160 Q400,200 430,280 Q440,370 420,450;
+        M340,160 Q390,180 420,260 Q430,360 410,440'
+        dur='2.9s' repeatCount='indefinite'/>
+    </path>
+  </g>
+</svg>

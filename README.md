@@ -5,9 +5,39 @@ An adaptive, cinematic psychological-horror web experience designed as an intera
 
 ---
 
-## 🩸 What's New in Version 3
+## 🎬 Animated Visual Assets & Video Loops System (NEW)
 
-### 1. Five Distinct Playable Horror Universes & Chapter Hub
+We have transitioned from static imagery to full **animated horror visual assets, transparent creature overlays, ambient video loops, and dynamic jumpscares**:
+
+### 1. Centralized Asset Encounter Library (`src/engine/assetRegistry.ts`)
+- **Organized Horror Asset Directory**:
+  ```text
+  public/assets/horror/
+  ├── creatures/           # Corridor runner silhouettes, crawling spirits (.webp)
+  ├── ghosts/              # Floating transparent banshee loops, slumped hallucinations (.svg, .webp)
+  ├── demons/              # The She-Devil, The Tall One stalker (.svg)
+  ├── female-entities/     # Weeping Bride with trembling shoulders & tears (.svg)
+  ├── face-encounters/     # Screaming demon jumpscares, ghoul emerges (.webp)
+  ├── environments/        # Moving ambient Victorian hallway loops (.mp4)
+  ├── fog-smoke/           # Seamless looping creeping volumetric fog (.mp4)
+  ├── shadows/             # Clawed shadows stretching on walls, breathing plaster (.svg)
+  ├── paranormal-effects/  # Blinking crimson horror eyes in darkness (.svg)
+  ├── glitch-effects/      # VHS CRT camera static, dripping blood on glass (.webp, .svg)
+  ├── particles/           # Flashlight dust motes drifting in air (.svg)
+  ├── animations/          # Rotating demonic occult seal (Lottie JSON)
+  └── textures/            # Blood splatters and grunge maps
+  ```
+- **Extensible Drop-In Pipeline**: Simply drop any downloaded `.webm`, `.mp4`, `.webp`, `.gif`, or `.json` file into its appropriate folder, register it in `HORROR_ASSETS`, and the Horror Director will seamlessly utilize it across scenes!
+
+### 2. Reusable Media & Player Components
+- **`<HorrorMedia />`**: Reusable universal player supporting MP4/WebM video loops, animated WebP/GIF, animated SVGs, and Lottie animations with transparent alpha blending, auto-play error recovery, and lazy loading.
+- **`<AnimatedEntityOverlay />`**: Connects directly to the creature director to manifest moving, floating, breathing entities.
+- **Accessibility & Performance Aware**: Automatically pauses video loops and animations when the game is paused (`ESC`) or when **Reduced Motion** is enabled in the Caution screen.
+
+---
+
+## 🩸 5 Distinct Playable Horror Universes & Chapter Hub
+
 Experience 5 full story campaigns, each set in an unsettling environment with its own primary devil, environmental puzzles, clues, and escape conditions:
 1. **Story 01: The House That Breathes** *(1924 Craftsman Residence)*
    - *Primary Devil:* The Banshee & The Wall Breather
@@ -27,37 +57,10 @@ Experience 5 full story campaigns, each set in an unsettling environment with it
 
 ---
 
-### 2. Interactive Inventory & Evidence Inspection Dock
+## 🎒 Interactive Evidence Dock & Keypad System
 - **Floating Evidence Dock**: Bottom HUD displays all collected keys, documents, tools, and relics with glowing selection badges.
-- **3D-Style Evidence Inspection Modal**: Double-click or inspect any evidence item. Read its lore, inspect details, and click **"FLIP & EXAMINE REVERSE"** to uncover hidden handwritten combinations, diagrams, and occult inscriptions.
-
----
-
-### 3. Tactile 4-Digit Keypad & Lock Combination System
-- Interactive hardware keypad modal with tactile 0–9 buttons, real-time code display, clear/enter actions, audio mechanical clicks, and instant audio-visual error/success feedback.
-
----
-
-### 4. Terrifying Devil Visuals & Manifestations
-- High-resolution photorealistic and layered SVG supernatural devil apparitions embedded into scene geometry, peeking through cracked doors, lurking behind frosted elevator glass, staring from psychiatric ward corners, watching between pine trees, and emerging in mirror reflections.
-- Unpredictable threshold encounters: sudden doorway transitions occasionally trigger an extreme close-up face reveal with sharp orchestral audio stingers before cutting to black.
-
----
-
-### 5. Story Selection Hub & Non-Blocking Progression
-- **Story Select Hub**: Accessible at any time via the `CHAPTERS (5)` button. Browse chapters, view completion status, primary entity dossiers, and start any unlocked chapter.
-- **Escape Ending Screen Fixed**: Escaping a story now offers immediate options:
-  - `[ADVANCE TO STORY 0N]`: Seamlessly load the next unlocked horror chapter.
-  - `[CHAPTERS HUB]`: Open the chapter selection grid.
-  - `[REPLAY CHAPTER]`: Re-enter with persistent memory adjustments.
-  - `[OCCULT ARCHIVE]`: View collected relics and discovered anomalies.
-
----
-
-### 6. Overhauled Web Audio Synthesizer
-- Procedural 40Hz sub-bass, binaural respiration, rain simulator, door latch transients, resonant 1.0s clock ticks, heavy sub impacts, and glitch bursts.
-- **Directional Spatial Audio**: Banshee screams, ghost whispers, and demonic growls pan dynamically across headphones.
-- Working master volume slider and mute toggle in both the Caution screen and in-game pause HUD (`ESC` key).
+- **3D-Style Evidence Inspection Modal**: Double-click or inspect any evidence item. Read its lore and click **"FLIP & EXAMINE REVERSE"** to uncover hidden handwritten combinations, diagrams, and occult inscriptions.
+- **Tactile 4-Digit Keypad**: Hardware keypad modal with tactile 0–9 buttons, real-time code display, mechanical audio clicks, and error/success feedback.
 
 ---
 
@@ -70,7 +73,7 @@ npm install
 # Run development server (runs at http://localhost:3000)
 npm run dev
 
-# Run automated Vitest test suite (23 tests passing)
+# Run automated Vitest test suite (28 tests passing)
 npm run test
 
 # Compile TypeScript and build production bundle
@@ -81,5 +84,4 @@ npm run build
 
 ## ⚡ Deployment
 Configured for zero-config deployment to **Vercel** (`vercel.json`), **Netlify**, or any static hosting platform.
-- Zero external image/asset API dependencies: all audio is procedurally synthesized via Web Audio API, and graphics are self-contained.
-- Total production bundle size: **~120 kB gzipped**.
+- Total production bundle size: **~125 kB gzipped**.

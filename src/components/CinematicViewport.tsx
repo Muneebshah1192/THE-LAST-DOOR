@@ -10,6 +10,8 @@ import { AudioHUD } from './AudioHUD';
 import { PeripheralAnomaly } from './PeripheralAnomaly';
 import { GlitchText } from './GlitchText';
 import { InventoryBar } from './InventoryBar';
+import { HorrorMedia } from './HorrorMedia';
+import { HORROR_ASSETS } from '../engine/assetRegistry';
 
 export const CinematicViewport: React.FC = () => {
   const currentScene = useSessionStore((state) => state.currentScene);
@@ -88,6 +90,35 @@ export const CinematicViewport: React.FC = () => {
         <SceneElements scene={currentScene} onInspectHotspot={inspectHotspot} />
         <FlashlightLayer reducedMotion={reducedMotion} />
       </motion.div>
+
+      {/* Atmospheric Creeping Looping Fog Video Overlay */}
+      <div className="absolute inset-0 pointer-events-none z-15">
+        <HorrorMedia
+          asset={HORROR_ASSETS['fog_creeping_loop']}
+          className="w-full h-full object-cover"
+          opacity={0.32}
+        />
+      </div>
+
+      {/* Atmospheric Suspended Dust Motes Particle Loop */}
+      <div className="absolute inset-0 pointer-events-none z-16">
+        <HorrorMedia
+          asset={HORROR_ASSETS['particles_dust_motes']}
+          className="w-full h-full object-cover"
+          opacity={0.38}
+        />
+      </div>
+
+      {/* Peak Tension Blood Drips Overlay (Active during extreme dread >= 75) */}
+      {tensionLevel >= 75 && (
+        <div className="absolute inset-0 pointer-events-none z-17 transition-opacity duration-1000">
+          <HorrorMedia
+            asset={HORROR_ASSETS['glitch_blood_drip']}
+            className="w-full h-full object-cover"
+            opacity={0.5}
+          />
+        </div>
+      )}
 
       {/* Peripheral Vision Anomalies at Screen Margins */}
       <PeripheralAnomaly />

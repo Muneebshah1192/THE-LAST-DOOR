@@ -8,6 +8,13 @@ import { creatureDirector, CREATURE_ROSTER } from '../engine/creatureDirector';
 import { SCENES, ENDINGS, STORIES } from '../engine/storyData';
 import { MASTER_ITEMS } from '../engine/inventoryEngine';
 import { PUZZLE_REGISTRY } from '../engine/puzzleEngine';
+import { 
+  HORROR_ASSETS, 
+  getAssetsByCategory, 
+  getRandomFaceEncounter, 
+  getEntityAnimation, 
+  registerCustomAsset 
+} from '../engine/assetRegistry';
 
 describe('Player Memory Engine', () => {
   beforeEach(() => {
@@ -268,5 +275,71 @@ describe('Interactive Puzzle Engine', () => {
     const puzzle = PUZZLE_REGISTRY['mirror_crypt_lock'];
     expect(puzzle.correctCode).toBe('6631');
     expect(puzzle.rewardItemId).toBe('iron_crypt_key');
+  });
+});
+
+describe('Horror Asset Encounter & Animation Pipeline', () => {
+  it('contains registered animated assets across key horror categories', () => {
+    const assetKeys = Object.keys(HORROR_ASSETS);
+    expect(assetKeys.length).toBeGreaterThanOrEqual(10);
+
+    expect(HORROR_ASSETS['fog_creeping_loop']).toBeDefined();
+    expect(HORROR_ASSETS['glitch_vhs_static_cam']).toBeDefined();
+    expect(HORROR_ASSETS['face_demon_jumpscare']).toBeDefined();
+    expect(HORROR_ASSETS['ghost_banshee_float']).toBeDefined();
+    expect(HORROR_ASSETS['demon_she_devil']).toBeDefined();
+    expect(HORROR_ASSETS['demon_tall_one']).toBeDefined();
+    expect(HORROR_ASSETS['female_weeping_bride']).toBeDefined();
+    expect(HORROR_ASSETS['paranormal_blinking_eyes']).toBeDefined();
+  });
+
+  it('filters assets correctly by category', () => {
+    const ghosts = getAssetsByCategory('ghosts');
+    expect(ghosts.length).toBeGreaterThanOrEqual(1);
+    expect(ghosts.every(g => g.category === 'ghosts')).toBe(true);
+
+    const faceEncounters = getAssetsByCategory('face-encounters');
+    expect(faceEncounters.length).toBeGreaterThanOrEqual(2);
+    expect(faceEncounters.every(f => f.category === 'face-encounters')).toBe(true);
+  });
+
+  it('selects a valid random face encounter', () => {
+    const encounter = getRandomFaceEncounter();
+    expect(encounter).toBeDefined();
+    expect(encounter.category).toBe('face-encounters');
+    expect(encounter.path).toBeDefined();
+  });
+
+  it('maps entity IDs to dedicated animated assets', () => {
+    const banshee = getEntityAnimation('banshee');
+    expect(banshee).toBeDefined();
+    expect(banshee?.id).toBe('ghost_banshee_float');
+
+    const sheDevil = getEntityAnimation('she-devil');
+    expect(sheDevil).toBeDefined();
+    expect(sheDevil?.id).toBe('demon_she_devil');
+
+    const tallOne = getEntityAnimation('tall-one');
+    expect(tallOne).toBeDefined();
+    expect(tallOne?.id).toBe('demon_tall_one');
+
+    const weepingBride = getEntityAnimation('weeping-bride');
+    expect(weepingBride).toBeDefined();
+    expect(weepingBride?.id).toBe('female_weeping_bride');
+  });
+
+  it('allows dynamic registration of user-dropped custom assets', () => {
+    registerCustomAsset({
+      id: 'custom_phantom_loop',
+      name: 'Custom User Phantom',
+      category: 'ghosts',
+      path: '/assets/horror/ghosts/custom-phantom.webm',
+      type: 'video',
+      loop: true,
+      description: 'A custom user-added phantom loop.'
+    });
+
+    expect(HORROR_ASSETS['custom_phantom_loop']).toBeDefined();
+    expect(HORROR_ASSETS['custom_phantom_loop'].name).toBe('Custom User Phantom');
   });
 });

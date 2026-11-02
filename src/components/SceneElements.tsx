@@ -10,6 +10,8 @@ import { KeypadModal } from './KeypadModal';
 import { PUZZLE_REGISTRY } from '../engine/puzzleEngine';
 import { MASTER_ITEMS } from '../engine/inventoryEngine';
 import { audioDirector } from '../engine/audioDirector';
+import { HorrorMedia } from './HorrorMedia';
+import { HORROR_ASSETS } from '../engine/assetRegistry';
 
 interface SceneElementsProps {
   scene: SceneDef;
@@ -288,6 +290,26 @@ export const SceneElements: React.FC<SceneElementsProps> = ({ scene, onInspectHo
               : 'opacity-20 bg-radial-[circle_at_center,_transparent_60%,_rgba(162,13,25,0.25)_100%]'
           }`}
         />
+      )}
+
+      {/* Blinking Crimson Horror Eyes in Dark Room Periphery */}
+      {tensionLevel >= 2 && (
+        <div className="absolute right-[10%] bottom-[22%] w-36 h-20 pointer-events-none z-12 opacity-85">
+          <HorrorMedia
+            asset={HORROR_ASSETS['paranormal_blinking_eyes']}
+            className="w-full h-full object-contain"
+          />
+        </div>
+      )}
+
+      {/* Dynamic Creeping Wall Shadow Stretching Along Geometry */}
+      {tensionLevel >= 3 && (
+        <div className="absolute left-0 bottom-0 w-[450px] h-[350px] pointer-events-none z-11 opacity-60">
+          <HorrorMedia
+            asset={HORROR_ASSETS['shadow_creeping_wall']}
+            className="w-full h-full object-cover"
+          />
+        </div>
       )}
 
       {/* Dynamic In-Scene Creature Encounter */}
