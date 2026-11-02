@@ -1,0 +1,128 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background-color: #030304;
+    color: #d4cebe;
+    overflow: hidden;
+    user-select: none;
+    -webkit-user-select: none;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+}
+
+/* Film Grain Overlay using SVG noise */
+.film-grain {
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.08'/%3E%3C/svg%3E");
+  pointer-events: none;
+  opacity: 0.35;
+  animation: grainAnimation 0.5s steps(2) infinite;
+  z-index: 40;
+}
+
+@keyframes grainAnimation {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(-2%, 2%); }
+  50% { transform: translate(2%, -2%); }
+  75% { transform: translate(-1%, -1%); }
+  100% { transform: translate(1%, 1%); }
+}
+
+/* Cinematic Vignette */
+.cinematic-vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, transparent 35%, rgba(3, 3, 4, 0.75) 75%, rgba(3, 3, 4, 0.98) 100%);
+  pointer-events: none;
+  z-index: 30;
+}
+
+/* Scanline / CRT Subtle Interference */
+.crt-scanlines {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    rgba(18, 16, 16, 0) 50%, 
+    rgba(0, 0, 0, 0.25) 50%
+  ), linear-gradient(
+    90deg,
+    rgba(255, 0, 0, 0.02),
+    rgba(0, 255, 0, 0.01),
+    rgba(0, 0, 255, 0.02)
+  );
+  background-size: 100% 3px, 6px 100%;
+  pointer-events: none;
+  z-index: 35;
+  opacity: 0.6;
+}
+
+/* Subtle Flashlight Lighting Mask */
+.flashlight-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 25;
+  transition: opacity 0.5s ease-out;
+}
+
+/* Subtle Breathing Animation for Wall Anomaly */
+@keyframes wallBreathingPulse {
+  0%, 100% {
+    transform: scale(1) perspective(1000px) rotateX(0deg);
+    filter: brightness(1) contrast(1.05);
+  }
+  50% {
+    transform: scale(1.018) perspective(1000px) rotateX(0.4deg);
+    filter: brightness(1.12) contrast(1.15);
+  }
+}
+
+.anomaly-wall-breathing {
+  animation: wallBreathingPulse 6.5s ease-in-out infinite;
+  will-change: transform, filter;
+}
+
+/* Subtle Chromatic Aberration */
+.chromatic-aberration {
+  text-shadow: 
+    -1px 0 rgba(255, 0, 0, 0.4),
+    1px 0 rgba(0, 255, 255, 0.4);
+}
+
+/* Custom Tactical Cinematic Button */
+.btn-cinematic {
+  position: relative;
+  background-color: rgba(17, 18, 21, 0.6);
+  border: 1px solid rgba(212, 206, 190, 0.15);
+  color: #d4cebe;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+
+.btn-cinematic:hover {
+  background-color: rgba(27, 29, 34, 0.9);
+  border-color: rgba(212, 206, 190, 0.45);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.btn-cinematic:active {
+  transform: translateY(1px);
+  background-color: rgba(74, 14, 14, 0.4);
+  border-color: rgba(122, 27, 27, 0.8);
+}
