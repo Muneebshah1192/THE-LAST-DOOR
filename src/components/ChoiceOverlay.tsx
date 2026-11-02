@@ -1,4 +1,4 @@
-// The Last Door - Choice Overlay
+// The Last Door V2 - Choice Overlay with Blood-Red Accents
 import React from 'react';
 import { motion } from 'framer-motion';
 import { ChoiceOption } from '../engine/types';
@@ -14,11 +14,11 @@ export const ChoiceOverlay: React.FC<ChoiceOverlayProps> = ({ choices, onSelectC
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 1.2 }}
-      className="absolute inset-0 bg-void/70 backdrop-blur-sm flex flex-col items-center justify-center p-6 z-40 select-none"
+      className="absolute inset-0 bg-void/80 backdrop-blur-md flex flex-col items-center justify-center p-6 z-40 select-none"
     >
       <div className="max-w-md w-full space-y-6 text-center">
-        {/* Subtle Section Header */}
-        <p className="font-mono text-[11px] text-dust uppercase tracking-[0.3em]">
+        {/* Section Header */}
+        <p className="font-mono text-[11px] text-blood-light uppercase tracking-[0.35em]">
           CHOOSE YOUR THRESHOLD
         </p>
 
@@ -28,7 +28,7 @@ export const ChoiceOverlay: React.FC<ChoiceOverlayProps> = ({ choices, onSelectC
             <button
               key={choice.id}
               onClick={() => onSelectChoice(choice.id, choice.leadsToSceneId, choice.tensionImpact)}
-              className="btn-cinematic w-full p-5 text-left border border-dust/20 hover:border-bone transition-all group cursor-pointer block"
+              className="btn-cinematic w-full p-5 text-left border border-blood/30 hover:border-blood-crimson hover:shadow-[0_0_20px_rgba(162,13,25,0.4)] transition-all group cursor-pointer block"
             >
               <div className="font-mono text-xs md:text-sm tracking-[0.2em] uppercase text-bone group-hover:text-white transition-colors">
                 {choice.text}
@@ -43,7 +43,7 @@ export const ChoiceOverlay: React.FC<ChoiceOverlayProps> = ({ choices, onSelectC
         </div>
 
         {/* Ambient warning */}
-        <p className="font-cinematic text-[10px] text-dust/40 tracking-[0.2em] uppercase">
+        <p className="font-cinematic text-[10px] text-dust/40 tracking-[0.25em] uppercase">
           Some doors are better left unopened.
         </p>
       </div>

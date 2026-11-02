@@ -1,9 +1,10 @@
-// The Last Door - Engine Automated Tests
+// The Last Door V2 - Engine Automated Tests
 import { describe, it, expect, beforeEach } from 'vitest';
 import { memoryEngine } from '../engine/memoryEngine';
 import { tensionDirector } from '../engine/tensionDirector';
 import { anomalyEngine, INITIAL_ANOMALIES } from '../engine/anomalyEngine';
 import { encounterDirector } from '../engine/encounterDirector';
+import { creatureDirector, CREATURE_ROSTER } from '../engine/creatureDirector';
 import { SCENES, ENDINGS } from '../engine/storyData';
 
 describe('Player Memory Engine', () => {
@@ -116,13 +117,45 @@ describe('Anomaly Engine', () => {
   });
 });
 
+describe('Supernatural Creature Director', () => {
+  beforeEach(() => {
+    creatureDirector.reset();
+  });
+
+  it('registers all 21 supernatural entities', () => {
+    const creatures = creatureDirector.getAllCreatures();
+    expect(creatures.length).toBe(21);
+    
+    // Female entities
+    expect(CREATURE_ROSTER['banshee']).toBeDefined();
+    expect(CREATURE_ROSTER['weeping-bride']).toBeDefined();
+    expect(CREATURE_ROSTER['widow']).toBeDefined();
+    expect(CREATURE_ROSTER['hag']).toBeDefined();
+    expect(CREATURE_ROSTER['hollow-woman']).toBeDefined();
+    expect(CREATURE_ROSTER['she-devil']).toBeDefined();
+
+    // Other entities
+    expect(CREATURE_ROSTER['tall-one']).toBeDefined();
+    expect(CREATURE_ROSTER['wall-breather']).toBeDefined();
+    expect(CREATURE_ROSTER['wraith']).toBeDefined();
+    expect(CREATURE_ROSTER['specter']).toBeDefined();
+    expect(CREATURE_ROSTER['fiend']).toBeDefined();
+    expect(CREATURE_ROSTER['ghoul']).toBeDefined();
+  });
+
+  it('assigns terrifying audio signatures to supernatural entities', () => {
+    expect(CREATURE_ROSTER['banshee'].audioSignature).toBe('banshee_scream');
+    expect(CREATURE_ROSTER['weeping-bride'].audioSignature).toBe('weeping');
+    expect(CREATURE_ROSTER['she-devil'].audioSignature).toBe('demonic_growl');
+  });
+});
+
 describe('Encounter Director', () => {
   beforeEach(() => {
     encounterDirector.resetSession();
   });
 
   it('prevents sudden creature encounters during the initial anticipation phase', () => {
-    // Immediate evaluation (elapsed session seconds < 75)
     const encounter = encounterDirector.evaluateEncounter('house-hallway', 90, 1000);
     expect(encounter).toBeNull();
   });

@@ -1,4 +1,4 @@
-// The Last Door - Cinematic Ending Screen
+// The Last Door V2 - Cinematic Ending Screen
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Archive, RefreshCcw } from 'lucide-react';
@@ -15,25 +15,25 @@ export const EndingScreen: React.FC = () => {
 
   return (
     <div className="relative w-screen h-screen bg-void flex flex-col items-center justify-center p-6 select-none overflow-hidden z-50">
-      <div className="cinematic-vignette" />
-      <div className="film-grain opacity-30" />
-      <div className="crt-scanlines opacity-50" />
+      <div className="cinematic-vignette-blood" />
+      <div className="film-grain opacity-35" />
+      <div className="crt-scanlines opacity-55" />
 
       <motion.div
         initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1.6, ease: 'easeOut' }}
-        className="max-w-lg w-full text-center space-y-6 z-10 p-8 border border-dust/15 bg-abyss/80 backdrop-blur-md"
+        className="max-w-lg w-full text-center space-y-6 z-10 p-8 border border-blood/30 bg-abyss/85 backdrop-blur-md shadow-[0_0_30px_rgba(118,9,9,0.35)]"
       >
         {/* Session Status */}
-        <p className="font-mono text-[11px] tracking-[0.35em] text-dust uppercase">
+        <p className="font-mono text-[11px] tracking-[0.35em] text-blood-light uppercase">
           SESSION COMPLETE &mdash; ARCHIVE SEALED
         </p>
 
         {/* Story Title */}
         <div className="space-y-1">
           <p className="font-sans text-[11px] text-dust/60 uppercase tracking-widest">
-            YOU EXPERIENCED:
+            YOU SURVIVED:
           </p>
           <h1 className="font-cinematic text-lg md:text-2xl tracking-[0.25em] text-bone uppercase">
             {STORY_TITLE}
@@ -41,24 +41,24 @@ export const EndingScreen: React.FC = () => {
         </div>
 
         {/* Ending Tagline */}
-        <div className="border-t border-b border-dust/15 py-4">
-          <p className="font-cinematic text-sm md:text-base tracking-[0.2em] text-bone/90 italic">
+        <div className="border-t border-b border-blood/30 py-4">
+          <p className="font-cinematic text-sm md:text-base tracking-[0.2em] text-blood-distortion italic">
             "{ending.tagline}"
           </p>
         </div>
 
         {/* Narrative Summary */}
-        <p className="font-sans text-xs md:text-sm text-dust/80 leading-relaxed font-light">
+        <p className="font-sans text-xs md:text-sm text-bone/80 leading-relaxed font-light">
           {ending.summary}
         </p>
 
         {/* Memory Imprint Note */}
-        <div className="bg-void/60 border-l-2 border-crimson p-3 text-left">
-          <p className="font-mono text-[11px] text-bone/80">
+        <div className="bg-void/70 border-l-2 border-blood p-3 text-left">
+          <p className="font-mono text-[11px] text-bone">
             RECORD: Visit #{totalVisits} archived.
           </p>
-          <p className="font-mono text-[10px] text-dust/60 pt-0.5">
-            Your footprints remain embedded in the floorboards.
+          <p className="font-mono text-[10px] text-dust/70 pt-0.5">
+            The house has permanently recorded your presence.
           </p>
         </div>
 
@@ -66,7 +66,7 @@ export const EndingScreen: React.FC = () => {
         <div className="flex flex-col sm:flex-row gap-3 pt-4">
           <button
             onClick={restartExperience}
-            className="btn-cinematic flex-1 py-3.5 text-xs font-mono uppercase tracking-[0.25em] flex items-center justify-center space-x-2 cursor-pointer"
+            className="btn-blood-enter flex-1 py-3.5 text-xs font-mono uppercase tracking-[0.25em] flex items-center justify-center space-x-2 cursor-pointer font-bold"
           >
             <RefreshCcw className="w-3.5 h-3.5" />
             <span>RETURN</span>

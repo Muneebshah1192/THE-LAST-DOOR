@@ -1,4 +1,4 @@
-// The Last Door - Flashlight & Lighting Layer
+// The Last Door V2 - Flashlight, Lighting & Temporary Failure Layer
 import React, { useEffect, useState, useRef } from 'react';
 import { useSessionStore } from '../store/sessionStore';
 
@@ -9,12 +9,10 @@ interface FlashlightLayerProps {
 export const FlashlightLayer: React.FC<FlashlightLayerProps> = ({ reducedMotion }) => {
   const updateFlashlight = useSessionStore((state) => state.updateFlashlight);
   const activeAnomalies = useSessionStore((state) => state.activeAnomalies);
+  const flashlightFailure = useSessionStore((state) => state.flashlightFailure);
   const isShadowLagActive = activeAnomalies.includes('shadowLag');
 
-  // Direct flashlight coordinates (percentage 0 to 100)
   const [pos, setPos] = useState({ x: 50, y: 50 });
-  
-  // Trailing lag coordinates for shadowLag anomaly
   const [lagPos, setLagPos] = useState({ x: 50, y: 50 });
   const lagRef = useRef({ x: 50, y: 50 });
 
@@ -47,12 +45,10 @@ export const FlashlightLayer: React.FC<FlashlightLayerProps> = ({ reducedMotion 
     };
   }, [updateFlashlight]);
 
-  // Handle shadow lag trailing effect
   useEffect(() => {
     if (!isShadowLagActive || reducedMotion) return;
 
     const interval = setInterval(() => {
-      // Lerp lag position toward current position with deliberate inertia
       lagRef.current.x += (pos.x - lagRef.current.x) * 0.12;
       lagRef.current.y += (pos.y - lagRef.current.y) * 0.12;
       setLagPos({ x: lagRef.current.x, y: lagRef.current.y });
@@ -61,6 +57,17 @@ export const FlashlightLayer: React.FC<FlashlightLayerProps> = ({ reducedMotion 
     return () => clearInterval(interval);
   }, [isShadowLagActive, pos, reducedMotion]);
 
+  // If temporary flashlight failure occurs under peak tension, blackout mask takes over!
+  if (flashlightFailure) {
+    return (
+      <div className="absolute inset-0 pointer-events-none z-25 bg-void/98 transition-opacity duration-200">
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="w-1.5 h-1.5 rounded-full bg-blood animate-pulse opacity-40" />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="absolute inset-0 pointer-events-none z-20 overflow-hidden">
       {/* Volumetric flashlight mask */}
@@ -68,48 +75,48 @@ export const FlashlightLayer: React.FC<FlashlightLayerProps> = ({ reducedMotion 
         className="w-full h-full"
         style={{
           background: `radial-gradient(
-            circle 260px at ${pos.x}% ${pos.y}%, 
+            circle 270px at ${pos.x}% ${pos.y}%, 
             rgba(0, 0, 0, 0) 0%, 
-            rgba(3, 3, 4, 0.35) 45%, 
-            rgba(3, 3, 4, 0.75) 75%, 
-            rgba(3, 3, 4, 0.94) 100%
+            rgba(5, 5, 5, 0.4) 45%, 
+            rgba(5, 5, 5, 0.78) 75%, 
+            rgba(5, 5, 5, 0.96) 100%
           )`
         }}
       />
 
       {/* Primary Light Beam Glow */}
       <div
-        className="absolute w-[480px] h-[480px] rounded-full pointer-events-none mix-blend-screen opacity-15"
+        className="absolute w-[500px] h-[500px] rounded-full pointer-events-none mix-blend-screen opacity-15"
         style={{
-          left: `calc(${pos.x}% - 240px)`,
-          top: `calc(${pos.y}% - 240px)`,
-          background: 'radial-gradient(circle, rgba(230, 225, 205, 0.6) 0%, rgba(200, 190, 160, 0.15) 50%, transparent 75%)',
+          left: `calc(${pos.x}% - 250px)`,
+          top: `calc(${pos.y}% - 250px)`,
+          background: 'radial-gradient(circle, rgba(235, 230, 215, 0.65) 0%, rgba(200, 190, 160, 0.15) 50%, transparent 75%)',
           transition: reducedMotion ? 'none' : 'transform 0.05s ease-out'
         }}
       />
 
-      {/* Shadow Lag Anomaly Artifact: A trailing occlusion shadow */}
+      {/* Shadow Lag Anomaly */}
       {isShadowLagActive && !reducedMotion && (
         <div
-          className="absolute w-44 h-44 rounded-full pointer-events-none mix-blend-multiply opacity-55"
+          className="absolute w-48 h-48 rounded-full pointer-events-none mix-blend-multiply opacity-65"
           style={{
-            left: `calc(${lagPos.x}% - 88px)`,
-            top: `calc(${lagPos.y}% - 88px)`,
-            background: 'radial-gradient(circle, rgba(12, 10, 12, 0.95) 0%, rgba(20, 15, 18, 0.5) 60%, transparent 90%)',
+            left: `calc(${lagPos.x}% - 96px)`,
+            top: `calc(${lagPos.y}% - 96px)`,
+            background: 'radial-gradient(circle, rgba(16, 5, 8, 0.98) 0%, rgba(30, 10, 15, 0.5) 60%, transparent 90%)',
           }}
         />
       )}
 
-      {/* Subtle Dust Motes in Light Beam */}
+      {/* Floating Dust Motes */}
       <div 
         className="absolute w-64 h-64 pointer-events-none opacity-30 animate-dust"
         style={{
           left: `calc(${pos.x}% - 128px)`,
           top: `calc(${pos.y}% - 128px)`,
           backgroundImage: `radial-gradient(1px 1px at 20px 30px, #ffffff, rgba(0,0,0,0)),
-                            radial-gradient(1.5px 1.5px at 80px 120px, #e2ded7, rgba(0,0,0,0)),
+                            radial-gradient(1.5px 1.5px at 80px 120px, #D8D6D2, rgba(0,0,0,0)),
                             radial-gradient(1px 1px at 150px 70px, #ffffff, rgba(0,0,0,0)),
-                            radial-gradient(1.5px 1.5px at 210px 180px, #e2ded7, rgba(0,0,0,0))`
+                            radial-gradient(1.5px 1.5px at 210px 180px, #D8D6D2, rgba(0,0,0,0))`
         }}
       />
     </div>

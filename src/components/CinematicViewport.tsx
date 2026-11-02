@@ -1,4 +1,4 @@
-// The Last Door - Cinematic Viewport & Camera Rig
+// The Last Door V2 - Cinematic Viewport, Camera Rig & Hostile Environment
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSessionStore } from '../store/sessionStore';
@@ -7,6 +7,8 @@ import { FlashlightLayer } from './FlashlightLayer';
 import { VFXOverlay } from './VFXOverlay';
 import { ChoiceOverlay } from './ChoiceOverlay';
 import { AudioHUD } from './AudioHUD';
+import { PeripheralAnomaly } from './PeripheralAnomaly';
+import { GlitchText } from './GlitchText';
 
 export const CinematicViewport: React.FC = () => {
   const currentScene = useSessionStore((state) => state.currentScene);
@@ -15,10 +17,12 @@ export const CinematicViewport: React.FC = () => {
   const tickSession = useSessionStore((state) => state.tickSession);
   const reducedMotion = useSessionStore((state) => state.reducedMotion);
   const tensionLevel = useSessionStore((state) => state.tensionLevel);
+  const isPaused = useSessionStore((state) => state.isPaused);
+  const togglePause = useSessionStore((state) => state.togglePause);
 
   const [narrativeLine, setNarrativeLine] = useState<string>('');
 
-  // Session Tick loop (runs at ~10Hz to evaluate tension, anomalies, and encounters)
+  // Session Tick loop (~10Hz)
   useEffect(() => {
     const interval = setInterval(() => {
       tickSession(0.1);
@@ -27,7 +31,7 @@ export const CinematicViewport: React.FC = () => {
     return () => clearInterval(interval);
   }, [tickSession]);
 
-  // Narrative text sequence timer for current scene
+  // Narrative text sequence timer
   useEffect(() => {
     const lines = currentScene.narrativeText;
     if (!lines || lines.length === 0) return;
@@ -43,8 +47,18 @@ export const CinematicViewport: React.FC = () => {
     return () => clearInterval(lineInterval);
   }, [currentScene]);
 
-  // Slow camera sway calculations
-  const swayAmount = reducedMotion ? 0 : 0.8 + (tensionLevel / 100) * 1.5;
+  // Keyboard shortcut: ESC to toggle pause
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        togglePause();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [togglePause]);
+
+  const swayAmount = reducedMotion ? 0 : 0.8 + (tensionLevel / 100) * 1.8;
 
   return (
     <div className="relative w-screen h-screen bg-void overflow-hidden select-none">
@@ -54,25 +68,25 @@ export const CinematicViewport: React.FC = () => {
           reducedMotion
             ? { scale: 1, rotate: 0 }
             : {
-                scale: [1, 1.02, 1.01, 1.025, 1],
-                rotate: [0, 0.3, -0.2, 0.15, 0],
+                scale: [1, 1.025, 1.015, 1.03, 1],
+                rotate: [0, 0.35, -0.25, 0.2, 0],
                 x: [0, swayAmount, -swayAmount, swayAmount * 0.5, 0],
                 y: [0, -swayAmount * 0.5, swayAmount, -swayAmount, 0]
               }
         }
         transition={{
-          duration: 16,
+          duration: 15,
           repeat: Infinity,
           ease: 'easeInOut'
         }}
         className="relative w-full h-full"
       >
-        {/* Core Scene Elements & Hotspots */}
         <SceneElements scene={currentScene} onInspectHotspot={inspectHotspot} />
-
-        {/* Flashlight & Light Mask */}
         <FlashlightLayer reducedMotion={reducedMotion} />
       </motion.div>
+
+      {/* Peripheral Vision Anomalies at Screen Margins */}
+      <PeripheralAnomaly />
 
       {/* Cinematic Film Visual Effects Overlay */}
       <VFXOverlay />
@@ -94,24 +108,53 @@ export const CinematicViewport: React.FC = () => {
             <motion.p
               key={narrativeLine}
               initial={{ opacity: 0, y: 4 }}
-              animate={{ opacity: 0.85, y: 0 }}
+              animate={{ opacity: 0.9, y: 0 }}
               exit={{ opacity: 0, y: -4 }}
               transition={{ duration: 1.2 }}
-              className="font-mono text-xs md:text-sm tracking-[0.25em] text-bone uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]"
+              className="font-mono text-xs md:text-sm tracking-[0.25em] text-bone uppercase drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)]"
             >
-              {narrativeLine}
+              <GlitchText text={narrativeLine} corruptChance={0.07} />
             </motion.p>
           )}
         </AnimatePresence>
       </div>
 
-      {/* Decision / Choice Overlay if scene has choices and player hasn't picked */}
+      {/* Decision / Choice Overlay */}
       {currentScene.choices && currentScene.choices.length > 0 && (
         <ChoiceOverlay
           choices={currentScene.choices}
           onSelectChoice={selectChoice}
         />
       )}
+
+      {/* Pause Modal Overlay */}
+      <AnimatePresence>
+        {isPaused && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-void/90 backdrop-blur-md flex items-center justify-center z-50 p-6 select-none"
+          >
+            <div className="max-w-sm w-full bg-abyss border border-dust/20 p-8 text-center space-y-6 shadow-2xl">
+              <h2 className="font-cinematic text-lg tracking-[0.3em] text-bone uppercase">
+                EXPERIENCE PAUSED
+              </h2>
+              <p className="text-xs font-sans text-dust/70 leading-relaxed">
+                The silence is waiting. Press resume whenever you are ready to continue.
+              </p>
+              <div className="space-y-3">
+                <button
+                  onClick={togglePause}
+                  className="btn-blood-enter w-full py-3 text-xs font-mono uppercase tracking-widest cursor-pointer"
+                >
+                  RESUME
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Subtle Safety & Audio HUD */}
       <AudioHUD />

@@ -12,8 +12,8 @@
   }
 
   body {
-    background-color: #030304;
-    color: #d4cebe;
+    background-color: #050505;
+    color: #D8D6D2;
     overflow: hidden;
     user-select: none;
     -webkit-user-select: none;
@@ -28,10 +28,10 @@
   left: -50%;
   width: 200%;
   height: 200%;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.08'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.09'/%3E%3C/svg%3E");
   pointer-events: none;
-  opacity: 0.35;
-  animation: grainAnimation 0.5s steps(2) infinite;
+  opacity: 0.38;
+  animation: grainAnimation 0.4s steps(2) infinite;
   z-index: 40;
 }
 
@@ -43,13 +43,21 @@
   100% { transform: translate(1%, 1%); }
 }
 
-/* Cinematic Vignette */
+/* Cinematic Vignette with Faint Dried Blood Rim */
 .cinematic-vignette {
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at center, transparent 35%, rgba(3, 3, 4, 0.75) 75%, rgba(3, 3, 4, 0.98) 100%);
+  background: radial-gradient(circle at center, transparent 30%, rgba(5, 5, 5, 0.75) 70%, rgba(5, 5, 5, 0.98) 100%);
   pointer-events: none;
   z-index: 30;
+}
+
+.cinematic-vignette-blood {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, transparent 35%, rgba(67, 6, 9, 0.3) 75%, rgba(5, 5, 5, 0.98) 100%);
+  pointer-events: none;
+  z-index: 31;
 }
 
 /* Scanline / CRT Subtle Interference */
@@ -57,18 +65,18 @@
   position: absolute;
   inset: 0;
   background: linear-gradient(
-    rgba(18, 16, 16, 0) 50%, 
-    rgba(0, 0, 0, 0.25) 50%
+    rgba(16, 16, 16, 0) 50%, 
+    rgba(5, 5, 5, 0.3) 50%
   ), linear-gradient(
     90deg,
-    rgba(255, 0, 0, 0.02),
-    rgba(0, 255, 0, 0.01),
-    rgba(0, 0, 255, 0.02)
+    rgba(162, 13, 25, 0.03),
+    rgba(0, 0, 0, 0.01),
+    rgba(118, 9, 9, 0.02)
   );
   background-size: 100% 3px, 6px 100%;
   pointer-events: none;
   z-index: 35;
-  opacity: 0.6;
+  opacity: 0.65;
 }
 
 /* Subtle Flashlight Lighting Mask */
@@ -80,49 +88,70 @@
   transition: opacity 0.5s ease-out;
 }
 
-/* Subtle Breathing Animation for Wall Anomaly */
+/* Wall Breathing Pulse */
 @keyframes wallBreathingPulse {
   0%, 100% {
     transform: scale(1) perspective(1000px) rotateX(0deg);
     filter: brightness(1) contrast(1.05);
   }
   50% {
-    transform: scale(1.018) perspective(1000px) rotateX(0.4deg);
-    filter: brightness(1.12) contrast(1.15);
+    transform: scale(1.025) perspective(1000px) rotateX(0.5deg);
+    filter: brightness(1.15) contrast(1.2) drop-shadow(0 0 15px rgba(118, 9, 9, 0.3));
   }
 }
 
 .anomaly-wall-breathing {
-  animation: wallBreathingPulse 6.5s ease-in-out infinite;
+  animation: wallBreathingPulse 6.0s ease-in-out infinite;
   will-change: transform, filter;
 }
 
-/* Subtle Chromatic Aberration */
-.chromatic-aberration {
+/* Blood-Red Corrupted Text Aberration */
+.text-blood-distortion {
+  color: #A20D19;
   text-shadow: 
-    -1px 0 rgba(255, 0, 0, 0.4),
-    1px 0 rgba(0, 255, 255, 0.4);
+    -1.5px 0 #760909,
+    1.5px 0 #430609,
+    0 0 10px rgba(162, 13, 25, 0.5);
+  letter-spacing: 0.25em;
 }
 
-/* Custom Tactical Cinematic Button */
+/* Custom Tactical Cinematic Button with Blood-Red Accent */
 .btn-cinematic {
   position: relative;
-  background-color: rgba(17, 18, 21, 0.6);
-  border: 1px solid rgba(212, 206, 190, 0.15);
-  color: #d4cebe;
+  background-color: rgba(16, 16, 16, 0.7);
+  border: 1px solid rgba(216, 214, 210, 0.15);
+  color: #D8D6D2;
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   overflow: hidden;
 }
 
 .btn-cinematic:hover {
-  background-color: rgba(27, 29, 34, 0.9);
-  border-color: rgba(212, 206, 190, 0.45);
+  background-color: rgba(26, 10, 10, 0.9);
+  border-color: rgba(162, 13, 25, 0.65);
   color: #ffffff;
+  box-shadow: 0 0 18px rgba(162, 13, 25, 0.35);
   transform: translateY(-1px);
 }
 
 .btn-cinematic:active {
   transform: translateY(1px);
-  background-color: rgba(74, 14, 14, 0.4);
-  border-color: rgba(122, 27, 27, 0.8);
+  background-color: rgba(67, 6, 9, 0.7);
+  border-color: rgba(162, 13, 25, 0.9);
+}
+
+.btn-blood-enter {
+  position: relative;
+  background-color: rgba(30, 8, 8, 0.85);
+  border: 1px solid #760909;
+  color: #D8D6D2;
+  box-shadow: 0 0 15px rgba(118, 9, 9, 0.4);
+  transition: all 0.3s ease;
+}
+
+.btn-blood-enter:hover {
+  background-color: rgba(67, 6, 9, 0.95);
+  border-color: #A20D19;
+  color: #ffffff;
+  box-shadow: 0 0 30px rgba(162, 13, 25, 0.7);
+  transform: scale(1.02);
 }

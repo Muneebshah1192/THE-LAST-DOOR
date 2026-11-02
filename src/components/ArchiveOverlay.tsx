@@ -1,10 +1,11 @@
-// The Last Door - Archive Overlay ("Case File")
+// The Last Door V2 - Archive Overlay ("Case File Dossier")
 import React from 'react';
 import { motion } from 'framer-motion';
 import { X, RotateCcw } from 'lucide-react';
 import { useSessionStore } from '../store/sessionStore';
 import { memoryEngine } from '../engine/memoryEngine';
 import { INITIAL_ANOMALIES } from '../engine/anomalyEngine';
+import { CREATURE_ROSTER } from '../engine/creatureDirector';
 
 export const ArchiveOverlay: React.FC = () => {
   const closeArchive = useSessionStore((state) => state.closeArchive);
@@ -15,7 +16,7 @@ export const ArchiveOverlay: React.FC = () => {
   const theHouseRemembers = useSessionStore((state) => state.theHouseRemembers);
 
   const handlePurgeMemory = () => {
-    if (window.confirm('Erase all recorded visits, relics, and memories from this device?')) {
+    if (window.confirm('Erase all recorded visits, relics, and supernatural encounters from this device?')) {
       memoryEngine.resetMemory();
       window.location.reload();
     }
@@ -28,7 +29,7 @@ export const ArchiveOverlay: React.FC = () => {
       exit={{ opacity: 0 }}
       className="fixed inset-0 bg-void/90 backdrop-blur-md flex items-center justify-center p-6 z-50 select-none overflow-y-auto"
     >
-      <div className="max-w-2xl w-full bg-abyss border border-dust/20 p-6 md:p-10 shadow-2xl relative my-auto">
+      <div className="max-w-3xl w-full bg-abyss border border-dust/20 p-6 md:p-10 shadow-2xl relative my-auto">
         {/* Close Button */}
         <button
           onClick={closeArchive}
@@ -40,15 +41,15 @@ export const ArchiveOverlay: React.FC = () => {
 
         {/* Dossier Header */}
         <div className="border-b border-dust/15 pb-4 mb-6">
-          <p className="font-mono text-[10px] text-dust/60 uppercase tracking-[0.3em]">
+          <p className="font-mono text-[10px] text-blood-light uppercase tracking-[0.3em]">
             INVESTIGATION DOSSIER &mdash; CONFIDENTIAL
           </p>
           <h2 className="font-cinematic text-lg md:text-xl tracking-[0.25em] text-bone uppercase pt-1">
-            Your Archive
+            The Last Door &mdash; Archive Case File
           </h2>
         </div>
 
-        {/* Status Metrics */}
+        {/* Metrics Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8 font-mono">
           <div className="bg-void/50 border border-dust/10 p-3">
             <span className="text-[10px] text-dust/60 uppercase block">Total Visits</span>
@@ -56,13 +57,13 @@ export const ArchiveOverlay: React.FC = () => {
           </div>
           <div className="bg-void/50 border border-dust/10 p-3">
             <span className="text-[10px] text-dust/60 uppercase block">House Memory</span>
-            <span className={`text-xs font-medium block pt-1 ${theHouseRemembers ? 'text-crimson' : 'text-dust'}`}>
-              {theHouseRemembers ? 'ACTIVE' : 'DORMANT'}
+            <span className={`text-xs font-bold block pt-1 ${theHouseRemembers ? 'text-blood-light' : 'text-dust'}`}>
+              {theHouseRemembers ? 'ACTIVE [REMEMBERED]' : 'DORMANT'}
             </span>
           </div>
           <div className="bg-void/50 border border-dust/10 p-3">
             <span className="text-[10px] text-dust/60 uppercase block">Anomalies</span>
-            <span className="text-base text-bone font-medium">{discoveredAnomalies.length} / 5</span>
+            <span className="text-base text-bone font-medium">{discoveredAnomalies.length} / {INITIAL_ANOMALIES.length}</span>
           </div>
           <div className="bg-void/50 border border-dust/10 p-3">
             <span className="text-[10px] text-dust/60 uppercase block">Endings</span>
@@ -70,21 +71,39 @@ export const ArchiveOverlay: React.FC = () => {
           </div>
         </div>
 
+        {/* Supernatural Entities Catalog */}
+        <div className="space-y-3 mb-8">
+          <h3 className="font-mono text-xs text-dust uppercase tracking-widest">
+            Recorded Supernatural Entities (21 Total Documented)
+          </h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 text-xs font-mono max-h-48 overflow-y-auto pr-1">
+            {Object.values(CREATURE_ROSTER).map((creature) => (
+              <div key={creature.id} className="p-2.5 border border-dust/10 bg-void/40">
+                <div className="flex items-center justify-between">
+                  <span className="text-bone/90 font-medium">{creature.name}</span>
+                  <span className="text-[9px] text-blood-light uppercase">[{creature.category}]</span>
+                </div>
+                <p className="text-[10px] text-dust/70 pt-1 line-clamp-2">{creature.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
         {/* Discovered Relics Section */}
         <div className="space-y-3 mb-8">
           <h3 className="font-mono text-xs text-dust uppercase tracking-widest">
-            Discovered Artifacts & Relics
+            Extracted Physical Relics
           </h3>
           {discoveredRelics.length === 0 ? (
-            <p className="text-xs font-sans text-dust/50 italic py-2">
-              No artifacts have been extracted from the threshold yet.
+            <p className="text-xs font-sans text-dust/50 italic py-1">
+              No relics extracted from the threshold yet. Explore objects in the foyer, parlor, and corridor.
             </p>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {discoveredRelics.map((relicId) => (
                 <div key={relicId} className="border border-dust/15 bg-void/40 p-3 text-xs font-mono">
                   <span className="text-bone uppercase block">{relicId.replace(/_/g, ' ')}</span>
-                  <span className="text-[10px] text-dust/60 block pt-0.5">Catalogued in Archive</span>
+                  <span className="text-[10px] text-dust/60 block pt-0.5">Securely Archived</span>
                 </div>
               ))}
             </div>
@@ -123,11 +142,11 @@ export const ArchiveOverlay: React.FC = () => {
           </div>
         </div>
 
-        {/* Purge / Clear Data Action */}
+        {/* Purge & Close Actions */}
         <div className="border-t border-dust/15 pt-6 flex items-center justify-between">
           <button
             onClick={handlePurgeMemory}
-            className="flex items-center space-x-1.5 text-[11px] font-mono text-dust/60 hover:text-crimson transition-colors cursor-pointer"
+            className="flex items-center space-x-1.5 text-[11px] font-mono text-dust/60 hover:text-blood-light transition-colors cursor-pointer"
           >
             <RotateCcw className="w-3.5 h-3.5" />
             <span>PURGE ARCHIVE MEMORY</span>
