@@ -86,18 +86,16 @@ export const CinematicViewport: React.FC = () => {
 
   return (
     <div className="relative w-screen h-screen bg-void overflow-hidden select-none">
-      {/* Cinematic Camera Rig Container with 3D Augmented Reality Perspective */}
+      {/* Cinematic Camera Rig Container */}
       <motion.div
         animate={
           reducedMotion
             ? { scale: 1, rotate: 0 }
             : {
-                scale: [1, 1.025, 1.015, 1.03, 1],
-                rotate: [0, 0.35, -0.25, 0.2, 0],
-                x: [0, swayAmount, -swayAmount, swayAmount * 0.5, 0],
-                y: [0, -swayAmount * 0.5, swayAmount, -swayAmount, 0],
-                rotateX: headTiltX,
-                rotateY: headTiltY
+                scale: [1, 1.02, 1.01, 1.025, 1],
+                rotate: [0, 0.25, -0.2, 0.15, 0],
+                x: [0, swayAmount + headTiltY * 2, -swayAmount + headTiltY * 2, swayAmount * 0.5, 0],
+                y: [0, -swayAmount * 0.5 + headTiltX * 2, swayAmount + headTiltX * 2, -swayAmount, 0]
               }
         }
         transition={{
@@ -105,30 +103,11 @@ export const CinematicViewport: React.FC = () => {
           repeat: Infinity,
           ease: 'easeInOut'
         }}
-        className="relative w-full h-full"
-        style={{ perspective: 1200, transformStyle: 'preserve-3d' }}
+        className="relative w-full h-full z-20"
       >
         <SceneElements scene={currentScene} onInspectHotspot={inspectHotspot} />
         <FlashlightLayer reducedMotion={reducedMotion} />
       </motion.div>
-
-      {/* Atmospheric Creeping Looping Fog Video Overlay */}
-      <div className="absolute inset-0 pointer-events-none z-15">
-        <HorrorMedia
-          asset={HORROR_ASSETS['fog_creeping_loop']}
-          className="w-full h-full object-cover"
-          opacity={0.32}
-        />
-      </div>
-
-      {/* Atmospheric Suspended Dust Motes Particle Loop */}
-      <div className="absolute inset-0 pointer-events-none z-16">
-        <HorrorMedia
-          asset={HORROR_ASSETS['particles_dust_motes']}
-          className="w-full h-full object-cover"
-          opacity={0.38}
-        />
-      </div>
 
       {/* Peak Tension Blood Drips Overlay (Active during extreme dread >= 75) */}
       {tensionLevel >= 75 && (

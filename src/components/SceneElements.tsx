@@ -32,7 +32,6 @@ export const SceneElements: React.FC<SceneElementsProps> = ({ scene, onInspectHo
   const currentStoryId = useSessionStore((state) => state.currentStoryId);
 
   const [activeMessage, setActiveMessage] = useState<string | null>(null);
-  const [selectedHotspotForContext, setSelectedHotspotForContext] = useState<string | null>(null);
   const [activeKeypadPuzzleId, setActiveKeypadPuzzleId] = useState<string | null>(null);
 
   // Check if flashlight beam is hovering near a hotspot
@@ -53,6 +52,47 @@ export const SceneElements: React.FC<SceneElementsProps> = ({ scene, onInspectHo
   };
 
   const handleHotspotClick = (hotspotId: string, revealsText?: string) => {
+    // -------------------------------------------------------------
+    // FORWARD NAVIGATION PORTALS (ALL STORIES)
+    // -------------------------------------------------------------
+    if (hotspotId === 'porch-door') {
+      audioDirector.playDoorLatch();
+      audioDirector.speakHorrorVoice('You push past the rotting cedar into the frozen foyer.', 'whisper');
+      showToast('STEPPING INSIDE THE HOUSE THAT BREATHES...');
+      setTimeout(() => advanceScene('house-foyer'), 200);
+      return;
+    }
+
+    if (hotspotId === 'foyer-parlor-arch') {
+      audioDirector.playFloorCreak(0.3);
+      audioDirector.speakHorrorVoice('Entering the family parlor.', 'whisper');
+      showToast('ENTERING THE PARLOR...');
+      setTimeout(() => advanceScene('house-parlor'), 200);
+      return;
+    }
+
+    if (hotspotId === 'parlor-hallway-door') {
+      audioDirector.playDoorLatch();
+      audioDirector.speakHorrorVoice('Stepping into the dark corridor.', 'whisper');
+      showToast('PROCEEDING DOWN CORRIDOR...');
+      setTimeout(() => advanceScene('house-hallway'), 200);
+      return;
+    }
+
+    if (hotspotId === 'elevator-doorway') {
+      audioDirector.playDoorLatch();
+      showToast('STEPPING ONTO FLOOR 13...');
+      setTimeout(() => advanceScene('floor13-hallway'), 200);
+      return;
+    }
+
+    if (hotspotId === 'hospital-ward-door') {
+      audioDirector.playDoorLatch();
+      showToast('STEPPING INTO HOSPITAL CORRIDOR...');
+      setTimeout(() => advanceScene('hospital-hallway'), 200);
+      return;
+    }
+
     // -------------------------------------------------------------
     // BACKTRACK NAVIGATION PORTALS (ALL STORIES)
     // -------------------------------------------------------------
@@ -365,9 +405,33 @@ export const SceneElements: React.FC<SceneElementsProps> = ({ scene, onInspectHo
   };
 
   const handleContextListen = (hotspotId: string) => {
-    performContextAction('listen', hotspotId);
-    showToast('YOU PRESS YOUR EAR TO THE SURFACE... SOMETHING IS BREATHING INSIDE.');
-    setSelectedHotspotForContext(null);
+    audioDirector.unlockAudio();
+    audioDirector.playFloorCreak(-0.2);
+
+    if (hotspotId === 'porch-door') {
+      audioDirector.playGhostWhisper(-0.3);
+      audioDirector.speakHorrorVoice('Heavy, ragged breathing rises from behind the open door. Someone is waiting inside.', 'whisper');
+      showToast('AUDIO FEED: HEAVY RAGGED BREATHING BEHIND CEDAR DOOR... SOMEONE IS WAITING INSIDE.', 5000);
+    } else if (hotspotId === 'foyer-clock') {
+      audioDirector.startClockTick();
+      audioDirector.speakHorrorVoice('Zero three seventeen. Frozen in time.', 'whisper');
+      showToast('AUDIO FEED: DEAD PENDULUM TICKING... FROZEN AT EXACTLY 03:17.', 5000);
+    } else if (hotspotId === 'parlor-cupboard') {
+      audioDirector.speakHorrorVoice('Four tumblers ticking behind the mantel cedar.', 'whisper');
+      showToast('AUDIO FEED: METALLIC TUMBLERS TICKING... FOUR DIGITS MATCH THE CLOCK.', 5000);
+    } else if (hotspotId === 'parlor-photo') {
+      audioDirector.speakHorrorVoice('Muffled crying behind the glass portrait.', 'whisper');
+      showToast('AUDIO FEED: MUFFLED VOICES FROM BEHIND THE PHOTO GLASS...', 5000);
+    } else if (hotspotId === 'hallway-cellar-door') {
+      audioDirector.playChiefVoice('behind');
+      audioDirector.speakHorrorVoice('Heavy fingernails scraping against the deadbolt. She knows you are there.', 'demonic');
+      showToast('AUDIO FEED: FINGERNAILS SCRAPING DEADBOLT: SHE IS WAITING IN THE CELLAR...', 5500);
+    } else {
+      performContextAction('listen', hotspotId);
+      audioDirector.playGhostWhisper(0.2);
+      audioDirector.speakHorrorVoice('Unsettling draft shifting past your neck.', 'whisper');
+      showToast('AUDIO FEED: UNSETTLING DRAFT SHIFTS... SOMETHING IS BREATHING NEARBY.', 5000);
+    }
   };
 
   return (
@@ -425,15 +489,8 @@ export const SceneElements: React.FC<SceneElementsProps> = ({ scene, onInspectHo
             <polygon points="445,175 570,185 570,435 445,435" fill="#14161a" stroke="#08090b" strokeWidth="2" />
             <polygon points="570,185 600,185 600,435 570,435" fill="#020203" />
             
-            {/* DEVIL IN DOORWAY: The Doorway Entity peeking from inside the crack */}
-            <g className="opacity-80">
-              <ellipse cx="585" cy="270" rx="6" ry="10" fill="#A20D19" />
-              <circle cx="584" cy="268" r="1.5" fill="#ffffff" />
-              {/* Claws gripping door edge */}
-              <line x1="570" y1="280" x2="562" y2="280" stroke="#777777" strokeWidth="2" />
-              <line x1="570" y1="285" x2="560" y2="285" stroke="#777777" strokeWidth="2" />
-              <line x1="570" y1="290" x2="562" y2="290" stroke="#777777" strokeWidth="2" />
-            </g>
+            {/* Deep atmospheric pitch-black door interior */}
+            <rect x="570" y="185" width="30" height="250" fill="#020203" />
           </svg>
         </div>
       )}
@@ -651,53 +708,66 @@ export const SceneElements: React.FC<SceneElementsProps> = ({ scene, onInspectHo
       {scene.hotspots.map((hotspot) => {
         const lit = isHotspotLit(hotspot.xPercent, hotspot.yPercent, hotspot.radiusPercent);
         const explored = revealedHotspots.includes(hotspot.id);
-        const isContextOpen = selectedHotspotForContext === hotspot.id;
 
         return (
           <div
             key={hotspot.id}
-            className="absolute -translate-x-1/2 -translate-y-1/2 z-30 transition-all duration-300"
+            className="absolute -translate-x-1/2 -translate-y-1/2 z-50 transition-all duration-300 pointer-events-auto"
             style={{
               left: `${hotspot.xPercent}%`,
               top: `${hotspot.yPercent}%`,
             }}
           >
-            <div className="relative flex items-center justify-center">
-              <button
-                onClick={() => setSelectedHotspotForContext(isContextOpen ? null : hotspot.id)}
-                className={`group relative flex items-center justify-center p-3.5 rounded-full cursor-pointer transition-all duration-500 ${
-                  lit ? 'opacity-100 scale-100' : 'opacity-25 scale-75'
+            <motion.div
+              initial={{ opacity: 0.9, scale: 0.95 }}
+              animate={{ 
+                opacity: 1, 
+                scale: lit ? 1.04 : 1,
+              }}
+              className="relative flex flex-col items-center select-none"
+            >
+              {/* Direct Interactive Card */}
+              <div 
+                className={`bg-void/95 border transition-all duration-300 p-2.5 flex flex-col gap-2 backdrop-blur-md shadow-[0_4px_30px_rgba(0,0,0,0.95)] min-w-[190px] ${
+                  lit 
+                    ? 'border-blood shadow-[0_0_25px_rgba(162,13,25,0.45)]' 
+                    : 'border-dust/40 hover:border-dust/70'
                 }`}
-                title={hotspot.name}
               >
-                <div className="absolute inset-0 rounded-full border border-bone/30 group-hover:border-blood group-hover:scale-125 transition-all duration-300" />
-                <div className={`w-3 h-3 rounded-full ${explored ? 'bg-dust/60' : 'bg-bone'} shadow-[0_0_10px_rgba(216,214,210,0.8)]`} />
-              </button>
+                {/* Target Name Header */}
+                <div className="flex items-center space-x-2 pb-1.5 border-b border-dust/15">
+                  <span className={`w-2 h-2 rounded-full ${explored ? 'bg-dust/60' : 'bg-blood animate-pulse'}`} />
+                  <p className="font-cinematic text-[11px] tracking-widest text-bone uppercase truncate">
+                    {hotspot.name}
+                  </p>
+                </div>
 
-              {/* Contextual Action Flyout Menu */}
-              {(lit || isContextOpen) && (
-                <motion.div
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="absolute top-12 whitespace-nowrap bg-void/95 border border-dust/30 p-1 flex flex-col gap-1 backdrop-blur-md shadow-2xl z-40"
+                {/* Primary Action Button (Direct Step/Inspect) */}
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleHotspotClick(hotspot.id, hotspot.revealsText);
+                  }}
+                  className="btn-blood-enter w-full py-2.5 px-3 text-[11px] font-mono tracking-widest uppercase font-bold text-center cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] shadow-md"
                 >
-                  <button
-                    onClick={() => handleHotspotClick(hotspot.id, hotspot.revealsText)}
-                    className="px-3 py-1.5 text-[11px] font-mono tracking-widest uppercase text-bone hover:bg-blood/20 hover:text-white text-left transition-colors cursor-pointer"
-                  >
-                    {hotspot.actionText}
-                  </button>
+                  {hotspot.actionText}
+                </button>
 
-                  <button
-                    onClick={() => handleContextListen(hotspot.id)}
-                    className="px-3 py-1.5 text-[10px] font-mono tracking-widest uppercase text-dust hover:bg-blood/20 hover:text-blood-light text-left transition-colors flex items-center space-x-1.5 cursor-pointer"
-                  >
-                    <Volume2 className="w-3 h-3" />
-                    <span>LISTEN FIRST</span>
-                  </button>
-                </motion.div>
-              )}
-            </div>
+                {/* Secondary Action: Listen Closely */}
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleContextListen(hotspot.id);
+                  }}
+                  className="w-full py-1.5 px-2 text-[10px] font-mono tracking-widest uppercase text-dust/90 hover:text-white hover:bg-blood/20 border border-dust/20 hover:border-blood/50 text-center transition-all flex items-center justify-center space-x-1.5 cursor-pointer active:scale-95"
+                >
+                  <Volume2 className="w-3.5 h-3.5 text-blood-light" />
+                  <span>LISTEN AT DOOR</span>
+                </button>
+              </div>
+            </motion.div>
           </div>
         );
       })}
